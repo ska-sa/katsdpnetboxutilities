@@ -5,7 +5,7 @@ import logging
 import configargparse
 
 from katsdpnetboxutilities.connect import query_netbox
-from katsdpnetboxutilities.network_diagram import make_dot_file
+from katsdpnetboxutilities.network.utils import make_dot_file
 
 
 def parse_args():
@@ -44,7 +44,7 @@ def parse_args():
     return config
 
 
-if __name__ == "__main__":
+def main():
     config = parse_args()
     path = "/api/dcim/interface-connections"
     query = {}
