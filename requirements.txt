@@ -5,3 +5,4 @@ certifi                # for requests
 chardet                # for requests
 idna                   # for requests
 urllib3                # for requests
+katversion
