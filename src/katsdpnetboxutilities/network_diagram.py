@@ -1,4 +1,5 @@
 import logging
+import os
 
 from collections import defaultdict
 
@@ -37,11 +38,19 @@ def create_graphviz(edges, subgraphs):
 
     for edge in edges:
         graph.edge(edge["a"], edge["b"])
+
     return graph
 
 
-def make_dot_file(filename, dataset):
+def make_dot_file(config, dataset):
     edges, subgraphs = extract_edges_subgraphs_from_netbox_result(dataset)
     graph = create_graphviz(edges, subgraphs)
-    graph.save(filename)
-    graph.render(view=True)
+    filename = os.path.join(config["output_path"], config["name"] + ".gv")
+    # graph.save(filename)
+    graph.save(directory=config["output_path"], filename=config["name"])
+    graph.render(
+        directory=config["output_path"],
+        filename=config["name"],
+        view=config["live"],
+        format="pdf",
+    )

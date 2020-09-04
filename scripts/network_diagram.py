@@ -18,9 +18,16 @@ def parse_args():
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")
     p.add("--cache-path", help="Directory to store temporary results")
-    p.add("-o", required=True, help="Outfile")
+    p.add(
+        "-o",
+        "--output-path",
+        required=True,
+        help="Path where the output files will be stored",
+    )
+    p.add("-n", "--name", required=True, help="Graph name")
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
+    p.add("-l", "--live", help="Live view, display the graph", action="store_true")
     p.add("search", nargs="+", help="Netbox search filter")
     config = vars(p.parse_args())
 
@@ -41,11 +48,8 @@ if __name__ == "__main__":
     config = parse_args()
     path = "/api/dcim/interface-connections"
     query = {}
-    print(config["search"])
     for query_item in config["search"]:
         key, value = query_item.split("=", 1)
         query[key] = value
-    data = query_netbox(
-        config["url"], config["token"], path, query, config["cache_path"]
-    )
-    make_dot_file(config["o"], data.get("results"))
+    data = query_netbox(config, path, query)
+    make_dot_file(config, data.get("results"))
