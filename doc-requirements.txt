@@ -1,0 +1,26 @@
+alabaster                          # via sphinx
+babel                              # via sphinx
+certifi                            # via requests
+chardet                            # via requests
+docutils                           # via sphinx
+idna                               # via requests
+imagesize                          # via sphinx
+jinja2                             # via sphinx
+markupsafe                         # via jinja2
+packaging                          # via sphinx
+pygments                           # via sphinx
+pyparsing                          # via packaging
+pytz                               # via babel
+requests                           # via sphinx
+six                                # via packaging
+snowballstemmer                    # via sphinx
+sphinx
+sphinxcontrib-applehelp            # via sphinx
+sphinxcontrib-devhelp              # via sphinx
+sphinxcontrib-htmlhelp             # via sphinx
+sphinxcontrib-jsmath               # via sphinx
+sphinxcontrib-qthelp               # via sphinx
+sphinxcontrib-serializinghtml      # via sphinx
+sphinxcontrib-websupport           # via sphinx
+sphinx-rtd-theme
+urllib3                            # via requests

@@ -1,0 +1,11 @@
+coverage
+attrs                           # via pytest
+importlib-metadata              # via pytest, pluggy
+more-itertools                  # via pytest
+packaging                       # via pytest
+pluggy                          # via pytest
+py                              # via pytest
+pytest
+pytest-cov
+wcwidth                         # via pytest
+zipp                            # via importlib-metadata
