@@ -1,3 +1,7 @@
 ConfigArgParse==1.2.3
 graphviz==0.14.1
 requests
+certifi                # for requests
+chardet                # for requests
+idna                   # for requests
+urllib3                # for requests
