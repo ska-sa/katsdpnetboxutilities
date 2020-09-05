@@ -10,6 +10,17 @@ katsdpnetboxutilities can be installed with pip directly from [github](https://g
 It is advised to install katsdpnetboxutilities in a virtual environment.
 `pip install -U git+https://github.com/ska-sa/katsdpnetboxutilities.git`
 
+Configure
+---------
+
+Configuration file can be passed in with the `-c` flag or the default config at `~/.config/sarao/netbox` will be used.
+
+Example config file:
+    token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    url=https://netbox.kat.ac.za
+ 
+Use the Netbox UI to obtain your token.
+
 Network Diagrams
 -----------------
 
