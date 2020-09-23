@@ -29,6 +29,24 @@ def parse_args():
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
     p.add("-l", "--live", help="Live view, display the graph", action="store_true")
+    p.add(
+        "--subgraph",
+        help="Make nodes subgraphs, do not work with all engines",
+        action="store_true",
+    )
+    p.add(
+        "--horizontal",
+        help="Attempt to produce a horizontal layout if possible",
+        action="store_true",
+    )
+    p.add(
+        "-e",
+        "--engine",
+        help="Graph layout engine to use",
+        default="dot",
+        choices=["dot", "neato", "sfdp", "circo"],
+    )
+    p.add("-f", "--format", help="Output format", default="pdf", choices=["pdf", "png"])
     p.add("search", nargs="+", help="Netbox search filter")
     config = vars(p.parse_args())
 
