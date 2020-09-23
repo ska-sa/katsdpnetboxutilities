@@ -26,6 +26,7 @@ def extract_edges_subgraphs_from_netbox_result(dataset):
 
 def create_graphviz(edges, subgraphs):
     graph = Graph(name="sarao")
+    graph.attr(rankdir='LR', overlap='false')
     for subgraph_name, subgraph in subgraphs.items():
         with graph.subgraph(name="cluster_" + subgraph_name) as subg:
             subg.attr(label=subgraph["_info"]["name"])
