@@ -45,12 +45,11 @@ def create_graphviz(edges, subgraphs):
 def make_dot_file(config, dataset):
     edges, subgraphs = extract_edges_subgraphs_from_netbox_result(dataset)
     graph = create_graphviz(edges, subgraphs)
-    filename = os.path.join(config["output_path"], config["name"] + ".gv")
-    # graph.save(filename)
-    graph.save(directory=config["output_path"], filename=config["name"])
+    filename = config["name"] + ".gv"
+    graph.save(directory=config["output_path"], filename=filename)
     graph.render(
         directory=config["output_path"],
-        filename=config["name"],
+        filename=filename,
         view=config["live"],
         format="pdf",
     )
