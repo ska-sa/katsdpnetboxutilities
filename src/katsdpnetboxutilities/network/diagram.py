@@ -18,6 +18,7 @@ def parse_args():
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")
     p.add("--cache-path", help="Directory to store temporary results")
+    p.add("--cache-age", help="How old cache objects can get (minutes)", default=600)
     p.add(
         "-o",
         "--output-path",
