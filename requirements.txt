@@ -1,3 +1,8 @@
 ConfigArgParse==1.2.3
-pygraphviz==1.6
-requests==2.24.0
+graphviz==0.14.1
+requests
+certifi                # for requests
+chardet                # for requests
+idna                   # for requests
+urllib3                # for requests
+katversion
