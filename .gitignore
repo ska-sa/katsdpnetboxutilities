@@ -1,0 +1,8 @@
+.coverage
+.eggs/
+build/
+dist/
+pytest.xml
+katsdpnetboxutilities.egg-info/
+UNKNOWN.egg-info/
+__pycache__

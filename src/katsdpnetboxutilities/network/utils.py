@@ -18,7 +18,7 @@ def extract_components_from_netbox_result(dataset, config):
         intf_a = "i{}".format(link["interface_a"]["id"])
         device_b = "d{}".format(link["interface_b"]["device"]["id"])
         intf_b = "i{}".format(link["interface_b"]["id"])
-        if config['subgraph']:
+        if config["subgraph"]:
             subgraphs[device_a]["_info"] = link["interface_a"]["device"]
             subgraphs[device_b]["_info"] = link["interface_b"]["device"]
             subgraphs[device_a][intf_a] = link["interface_a"]

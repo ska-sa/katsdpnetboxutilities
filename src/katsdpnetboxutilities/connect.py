@@ -11,8 +11,8 @@ from slugify import slugify
 
 QUERY_LIMIT_DEFAULT = 10000
 
-
-def _query_netbox(url, token, path, query=None):
+# OLD style
+def _query_netbox(url, token, path=None, query=None):
     headers = {
         "Authorization": "Token {}".format(token),
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ def _query_netbox(url, token, path, query=None):
     return req.json()
 
 
-def _query_netbox_url(url, path, query=None):
+def _query_netbox_url(url, path=None, query=None):
     if query:
         query.setdefault("limit", QUERY_LIMIT_DEFAULT)
     prepped = requests.Request("GET", urljoin(url, path), params=query).prepare()
@@ -65,3 +65,65 @@ def query_netbox(config, path, query=None):
         _save_cache(data, cache_filename)
 
     return data
+
+# New style
+
+
+class NetboxConnection:
+
+    def __init__(self, config):
+        self.config = config
+
+    def _cache_load(self, filename):
+        if filename.is_file():
+            age = time.time() - filename.stat().st_mtime
+            if age < (60 * self.config["cache_age"]):
+                with open(filename) as fh:
+                    logging.debug("_cache_load from %s", filename)
+                    return json.load(fh)
+
+    def _cache_save(self, filename, data):
+        if data:
+            with open(filename, "w+") as fh:
+                logging.debug("_cache_save to %s", filename)
+                json.dump(data, fh)
+        else:
+            logging.debug("_cache_save: Missing data, nothing cached.")
+
+    def query_path(self, path, query=None, url=None):
+        data = None
+        if url is None:
+           url = self.config["url"]
+
+        if self.config["cache_path"]:
+            filename = slugify(_query_netbox_url(url, path, query)) + ".json"
+            cache_filename = Path(self.config["cache_path"]) / filename
+            data = self._cache_load(cache_filename)
+
+        if not data:
+            data = _query_netbox(url, self.config["token"], path, query)
+
+        if self.config["cache_path"]:
+            self._cache_save(cache_filename, data)
+
+        return data
+
+    def devices(self, selection: dict):
+        path = "/api/dcim/devices"
+        data = self.query_path(path, query=selection)
+        for result in data.get('results', []):
+            yield result
+        # Check data['next'] if it exists Query that url.
+        while data.get('next'):
+            data = self.query_path(path=None, url=data['next'], query=selection)
+            for result in data.get('results', []):
+                yield result
+
+    def device_interfaces(self, device):
+        query =  {"device": device}
+        if device.startswith('id:'):
+            device_id = int(device.split(':')[1])
+            query =  {"device_id": device_id}
+        path = "/api/dcim/interface-connections"
+        data = self.query_path(path, query)
+        return data
