@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import logging
 import json
 from pathlib import Path
@@ -7,6 +8,7 @@ from pathlib import Path
 import configargparse
 
 from katsdpnetboxutilities.connect import NetboxConnection
+from katsdpnetboxutilities.network.utils import make_dot_file_from_path
 
 
 def parse_args():
@@ -16,10 +18,6 @@ def parse_args():
     """
     p = configargparse.ArgParser(default_config_files=["~/.config/sarao/netbox"])
     p.add("-c", "--config", is_config_file=True, help="config file")
-    p.add("--token", help="Netbox connection token")
-    p.add("--url", help="Netbox server URL")
-    p.add("--cache-path", help="Directory to store temporary results")
-    p.add("--cache-age", help="How old cache objects can get (minutes)", default=600)
     p.add(
         "-w",
         "--working-path",
@@ -29,9 +27,39 @@ def parse_args():
             "output files will be stored"
         ),
     )
+    p.add("-n", "--name", help="Graph name")
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
-    config = vars(p.parse_args())
+    p.add("-l", "--live", help="Live view, display the graph", action="store_true")
+    p.add(
+        "--subgraph",
+        help="Make nodes subgraphs, do not work with all engines",
+        action="store_true",
+    )
+    p.add(
+        "--horizontal",
+        help="Attempt to produce a horizontal layout if possible",
+        action="store_true",
+    )
+    p.add(
+        "-e",
+        "--engine",
+        help="Graph layout engine to use",
+        default="dot",
+        choices=["dot", "neato", "sfdp", "circo"],
+    )
+    p.add("-f", "--format", help="Output format", default="pdf", choices=["pdf", "png"])
+    config, unknown = p.parse_known_args()
+    config = vars(config)
+    config["working_path"] = Path(config["working_path"])
+
+    if not config["working_path"].exists() or not config["working_path"].is_dir():
+        raise ValueError(
+            "The working path do not exists"
+        )  # A custom exception would be nice
+
+    if not config.get("name"):
+        config["name"] = config["working_path"].name
 
     logger = logging.getLogger()
     if config["debug"]:
@@ -41,25 +69,17 @@ def parse_args():
     else:
         logger.setLevel(logging.WARNING)
 
+    config["output_path"] = config["working_path"]
     logging.debug(p.format_values())
     logging.debug("Config: %s", config)
     return config
 
 
 class QueryDefinitian:
-    def __init__(self, config, netbox):
+    def __init__(self, config):
         self.config = config
-        self._netbox = netbox
         self.workpath = config["working_path"]
-        self.query = {
-            "sites": {},
-            "racks": {},
-            "devices": {},
-            "tenants": {},
-            "tags": {}
-        }
-        # The device_ids is the final include/exclude set for the devices we will query for connections.
-        self._device_ids = {"include": set(), "exclude": set()}
+        self.query = {"sites": {}, "racks": {}, "devices": {}, "tenants": {}}
 
     def read(self):
         """Read in the definitian files."""
@@ -67,27 +87,15 @@ class QueryDefinitian:
             include, exclude = self._read_definitian(name)
             self.query[name]["include"] = include
             self.query[name]["exclude"] = exclude
-
-    def filter(self):
-        """Go through the include and exclude sets and create include & exclude set of device_id."""
-        logging.debug("Query %s", self.query)
-        for def_type in ["include", "exclude"]:
-            for device in self.query["devices"][def_type]:
-                if device.startswith("id:"):
-                    device_id = int(device.split(":")[1])
-                    self._device_ids[def_type].add(device_id)
-                else:
-                    for device_id in self._netbox.lookup_device_ids(device):
-                        self._device_ids[def_type].add(device_id)
-        logging.debug("Devices IDs after filter: %s", self._device_ids)
+        # TODO: Query each rack and get all the devices.
+        # TODO: Query each site and get all the devices.
 
     def include_device(self, obj: dict = None, name: str = None, device_id: int = None):
         if obj:
             logging.info("Add device %s", obj.get("name", obj["id"]))
             self.include_device(device_id=obj["id"])
         elif name:
-            if name not in self.query["devices"]["exclude"]:
-                self.query["devices"]["include"].add(name)
+            self.query["devices"]["include"].add(name)
         elif device_id:
             self.query["devices"]["include"].add("id:{}".format(device_id))
         else:
@@ -105,8 +113,8 @@ class QueryDefinitian:
             raise ValueError("No name or device_id given")
 
     def devices(self):
-        """The devices that are in the include set and not in the exclude set."""
-        return self._device_ids["include"].difference(self._device_ids["exclude"])
+        # Check each device to make sure it is not in the exclude list
+        return self.query["devices"]["include"]
 
     def _read_definitian(self, name):
         plfile = Path(self.workpath) / name
@@ -133,18 +141,6 @@ class QueryDefinitian:
 
     def save_connections(self, interfaces):
         for result in interfaces.get("results", []):
-            if result["interface_a"]["device"]["id"] in self._device_ids["exclude"]:
-                logging.info(
-                    "ignoring link to %s device in exclude list",
-                    result["interface_a"]["device"]["name"],
-                )
-                continue
-            elif result["interface_b"]["device"]["id"] in self._device_ids["exclude"]:
-                logging.info(
-                    "ignoring link to %s device in exclude list",
-                    result["interface_a"]["device"]["name"],
-                )
-                continue
             devicea = "{}:{}".format(
                 result["interface_a"]["device"]["name"], result["interface_a"]["name"]
             )
@@ -159,28 +155,12 @@ class QueryDefinitian:
 
 
 def main():
-    config = parse_args()
-    netbox = NetboxConnection(config)
-    qdef = QueryDefinitian(config, netbox)
-    qdef.read()
-
-    for def_type, definition in qdef.query.items():
-        if def_type == "devices":
-            continue
-        for item in definition["exclude"]:
-            for device in netbox.devices(key=def_type.rstrip("s"), value=item):
-                qdef.exclude_device(obj=device)
-
-        for item in definition["include"]:
-            for device in netbox.devices(key=def_type.rstrip("s"), value=item):
-                qdef.include_device(obj=device)
-
-    qdef.filter()
-
-    for device in qdef.devices():
-        logging.info("query device:%s", device)
-        data = netbox.device_interfaces(device)
-        qdef.save_connections(data)
+    try:
+        config = parse_args()
+    except Exception as error:
+        logging.error(error)
+        sys.exit(1)
+    make_dot_file_from_path(config)
 
 
 if __name__ == "__main__":

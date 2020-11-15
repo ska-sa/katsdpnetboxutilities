@@ -108,8 +108,19 @@ class NetboxConnection:
 
         return data
 
-    def devices(self, selection: dict):
+    def devices(self, selection: dict=None, key:str=None, value:str=None):
         path = "/api/dcim/devices"
+        if selection is None:
+            selection = {}
+
+        if key and value:
+            if value.startswith('id:'):
+                selection[key + '_id'] = int(value.split(':')[1])
+            elif type(value) == int:
+                selection[key + '_id'] = value
+            else:
+                selection[key] = value
+
         data = self.query_path(path, query=selection)
         for result in data.get('results', []):
             yield result
@@ -121,9 +132,20 @@ class NetboxConnection:
 
     def device_interfaces(self, device):
         query =  {"device": device}
-        if device.startswith('id:'):
+        if type(device) == int:
+            query =  {"device_id": device}
+        elif device.startswith('id:'):
             device_id = int(device.split(':')[1])
             query =  {"device_id": device_id}
         path = "/api/dcim/interface-connections"
         data = self.query_path(path, query)
         return data
+
+    def lookup_device_ids(self, device_name):
+        query = {'name': device_name}
+        path = "/api/dcim/devices"
+        data = self.query_path(path, query)
+        if data['count'] > 1:
+            logging.warning("While looking for device %s we found %s devices.", device_name, data['count'])
+        for device in data.get('results', []):
+            yield device['id']
