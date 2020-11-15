@@ -119,7 +119,7 @@ class QueryDefinitian:
                         continue
                     elif line.startswith("-"):
                         item = line.strip("-").strip()
-                        logging.error("exclude %s %s - not implemented!", name, item)
+                        logging.warning("exclude %s %s", name, item)
                         exclude_items.add(item)
                     elif line.startswith("+"):
                         item = line.strip("+").strip()
