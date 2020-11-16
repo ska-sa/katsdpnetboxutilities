@@ -77,7 +77,7 @@ class NetboxConnection:
     def _cache_load(self, filename):
         if filename.is_file():
             age = time.time() - filename.stat().st_mtime
-            if age < (60 * self.config["cache_age"]):
+            if age < (60 * float(self.config["cache_age"])):
                 with open(filename) as fh:
                     logging.debug("_cache_load from %s", filename)
                     return json.load(fh)
