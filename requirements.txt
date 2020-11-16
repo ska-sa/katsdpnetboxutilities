@@ -1,6 +1,6 @@
 ConfigArgParse==1.2.3
 graphviz==0.14.1
-regex                  # for awesome-slugify
+regex==2020.11.13      # for awesome-slugify
 unicode                # for awesome-slugify
 awesome-slugify==1.6.5
 requests
