@@ -1,11 +1,11 @@
 ConfigArgParse==1.2.3
 graphviz==0.14.1
 regex==2020.11.13      # for awesome-slugify
-unicode                # for awesome-slugify
+unicode==2.7           # for awesome-slugify
 awesome-slugify==1.6.5
-requests
-certifi                # for requests
-chardet                # for requests
-idna                   # for requests
-urllib3                # for requests
+requests==2.25.0
+certifi==2020.11.8     # for requests
+chardet==3.0.4         # for requests
+idna==2.10             # for requests
+urllib3==1.26.         # for requests
 katversion
