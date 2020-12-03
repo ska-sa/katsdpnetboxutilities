@@ -108,6 +108,29 @@ class NetboxConnection:
 
         return data
 
+    def ipaddresses(self, selection: dict=None, key:str=None, value:str=None):
+        # TODO: this method and devices are the same. Merge the code.
+        path = "/api/ipam/ip-addresses"
+        if selection is None:
+            selection = {}
+
+        if key and value:
+            if value.startswith('id:'):
+                selection[key + '_id'] = int(value.split(':')[1])
+            elif type(value) == int:
+                selection[key + '_id'] = value
+            else:
+                selection[key] = value
+
+        data = self.query_path(path, query=selection)
+        for result in data.get('results', []):
+            yield result
+        # Check data['next'] if it exists Query that url.
+        while data.get('next'):
+            data = self.query_path(path=None, url=data['next'], query=selection)
+            for result in data.get('results', []):
+                yield result
+
     def devices(self, selection: dict=None, key:str=None, value:str=None):
         path = "/api/dcim/devices"
         if selection is None:
