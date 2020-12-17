@@ -16,6 +16,7 @@ Configure
 Configuration file can be passed in with the `-c` flag or the default config at `~/.config/sarao/netbox` will be used.
 
 Example config file:
+
     token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     url=https://netbox.kat.ac.za
  
