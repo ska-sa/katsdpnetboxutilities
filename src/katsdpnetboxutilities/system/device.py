@@ -3,6 +3,8 @@
 import configargparse
 import json
 import logging
+import pynetbox
+import requests
 
 from pathlib import Path
 from pprint import pprint
@@ -53,7 +55,7 @@ class DeviceDocument:
         self.filename = filename
         self._netbox = netbox
         self._lshw = lshw
-        self._lsblk = lsblk # Lsblk must be called with -fs flag.
+        self._lsblk = lsblk  # lsblk must be called with -fs flag.
         self.page = Page()
 
     def _get_value_for_table(self, src, key, label=None):
@@ -187,8 +189,8 @@ class DeviceDocument:
         self._add_location()
         self._add_disk()
         self._add_fs()
-        self._add_cpu()
-        self._add_memory()
+        #self._add_cpu()
+        #self._add_memory()
         self.page.write(self.filename)
 
 
@@ -209,12 +211,12 @@ def parse_args():
         required=True,
         help="Path where the output files will be stored",
     )
-    p.add("-n", "--name", required=True, help="Graph name")  # TODO: Not required anymore
+    #p.add("-n", "--name", required=True, help="Graph name")  # TODO: Not required anymore
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
-    p.add("--device", help="Netbox device name from Ansible {{ inventroy_hostname }}")  # TODO: script should take name and lookup the id in Netbox
-    p.add("--lsblk", help="lsblk location" ) # TODO: add in the location of the lshw.json and lsblk.json. A URL e.g. http://sdp-services.sdp.kat.ac.za/servers
-    #p.add("--lshw", type=chr(), help="lshw location")
+    p.add("--device", help="Netbox device name from Ansible {{ inventroy_hostname }}")
+    p.add("--lsblk", help="lsblk location")
+    p.add("--lshw", help="lshw location")
 
     # URL should contain a directory of system names
     # If no documents found just give warning and continue
@@ -265,15 +267,32 @@ def get_lsblk ():
     return data
 
 
+def get_netbox_device_id(url, token, hostname):
+    session = requests.Session()
+    session.verify = False
+    nb = pynetbox.api(url,
+                      token=token
+                      )
+    nb.http_session = session
+    response = nb.dcim.devices.get(name=hostname)
+    device_dict = dict(response)
+    device_id = device_dict.get('id')
+    return device_id
+
+
 def main():
     config = parse_args()
-    path = f"/api/dcim/devices/{config['device'][0]}/"
+    pprint(config)
+    id = get_netbox_device_id(config["url"], config["token"], config["device"])
+    path = f"/api/dcim/devices/{id}/"
+    print(f"path = {path}")
     query = {}
     netbox = query_netbox(config, path, query)
     lshw = get_lshw()
     lsblk = get_lsblk()
     filename = f"{config['output_path']}/index.rst"
     page = DeviceDocument(filename, netbox, lshw, lsblk)
+    print(page)
     page.write()
 
 
