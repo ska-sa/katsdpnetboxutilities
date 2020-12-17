@@ -1,0 +1,5 @@
+
+docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc sphinx-init --project=systemX
+device.py -o /tmp/doc systemX
+docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc make html
+docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc make latexpdf
