@@ -1,26 +1,24 @@
 import json
 import logging
+import requests
 import time
 
-from urllib.parse import urljoin
 from pathlib import Path
-
-import requests
-
 from slugify import slugify
+from urllib.parse import urljoin
 
 QUERY_LIMIT_DEFAULT = 10000
 
 
 def _query_netbox(url, token, path, query=None):
     headers = {
-        "Authorization": "Token {}".format(token),
+        "Authorization": "Token {token}".format(token),
         "Content-Type": "application/json",
         "Accept": "application/json; indent=4",
     }
     if query:
         query.setdefault("limit", QUERY_LIMIT_DEFAULT)
-    req = requests.get(urljoin(url, path), headers=headers, params=query)
+    req = requests.get(urljoin(url, path), headers=headers, params=query, verify=False)
     return req.json()
 
 

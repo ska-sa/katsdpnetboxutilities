@@ -35,7 +35,7 @@ class Page:
         self._lines.append("   :header-rows: 0")
         self._lines.append(None)
         for row in rows:
-            self._lines.append(f'   * - {row[0]}')
+            self._lines.append(f"   * - {row[0]}")
             self._lines.append(f"     - {row[1] if row[1] else ''}")
         self._lines.append(None)
 
@@ -108,7 +108,7 @@ class DeviceDocument:
                 capabilities.append(cap)
             else:
                 capabilities.append(val)
-        rows.append(('Capabilities',", ".join(sorted(capabilities))))
+        rows.append(('Capabilities', ", ".join(sorted(capabilities))))
         self.page.ll_table(rows)
 
     def _add_cpu(self):
@@ -212,10 +212,12 @@ def parse_args():
     p.add("-n", "--name", required=True, help="Graph name")  # TODO: Not required anymore
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
-    p.add("device", nargs="+", type=int, help="Netbox device id")  # TODO: script should take name and lookup the id in Netbox
-    # TODO: add in the location of the lshw.json and lsblk.json. A URL e.g. http://sdp-services.sdp.kat.ac.za/servers 
-    # URL should contain a directory of system names. 
-    # If no documents found just give warning and continue. 
+    p.add("--device", help="Netbox device name from Ansible {{ inventroy_hostname }}")  # TODO: script should take name and lookup the id in Netbox
+    p.add("--lsblk", help="lsblk location" ) # TODO: add in the location of the lshw.json and lsblk.json. A URL e.g. http://sdp-services.sdp.kat.ac.za/servers
+    #p.add("--lshw", type=chr(), help="lshw location")
+
+    # URL should contain a directory of system names
+    # If no documents found just give warning and continue
     config = vars(p.parse_args())
 
     logger = logging.getLogger()
