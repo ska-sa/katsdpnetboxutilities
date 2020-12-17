@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import logging
+import configargparse
 import json
+import logging
+
 from pathlib import Path
 from pprint import pprint
 
-import configargparse
-
 from katsdpnetboxutilities.connect import query_netbox
+
 
 class Page:
 
@@ -34,8 +35,8 @@ class Page:
         self._lines.append("   :header-rows: 0")
         self._lines.append(None)
         for row in rows:
-            self._lines.append('   * - {}'.format(row[0]))
-            self._lines.append('     - {}'.format(row[1] if row[1] else ''))
+            self._lines.append(f'   * - {row[0]}')
+            self._lines.append(f"     - {row[1] if row[1] else ''}")
         self._lines.append(None)
 
     def write(self, filename):
@@ -96,13 +97,10 @@ class DeviceDocument:
     def _add_cpu_table(self, cpu_info):
         rows = []
         rows.append(self._get_value_for_table(cpu_info, 'vendor'))
-        rows.append(self._get_value_for_table(cpu_info, 'product')) # or version
-        rows.append(self._get_value_for_table(cpu_info, 'capacity', 'Clock')) # The Max clock
-        cores_str = "enabled: {}/{}, threads {}".format(
-                cpu_info['configuration']['enabledcores'],
-                cpu_info['configuration']['cores'],
-                cpu_info['configuration']['threads']
-                )
+        rows.append(self._get_value_for_table(cpu_info, 'product'))  # or version
+        rows.append(self._get_value_for_table(cpu_info, 'capacity', 'Clock'))  # The Max clock
+        cores_str = f"enabled: {cpu_info['configuration']['enabledcores']}/{cpu_info['configuration']['cores']}, " \
+                    f"threads {cpu_info['configuration']['threads']}"
         rows.append(('Cores', cores_str))
         capabilities = []
         for cap, val in cpu_info['capabilities'].items():
@@ -193,6 +191,7 @@ class DeviceDocument:
         self._add_memory()
         self.page.write(self.filename)
 
+
 def parse_args():
     """Parse command line, config file and environmental variables.
 
@@ -210,10 +209,10 @@ def parse_args():
         required=True,
         help="Path where the output files will be stored",
     )
-    p.add("-n", "--name", required=True, help="Graph name") # TODO: Not required anymore
+    p.add("-n", "--name", required=True, help="Graph name")  # TODO: Not required anymore
     p.add("-v", "--verbose", help="Verbose", action="store_true")
     p.add("-d", "--debug", help="Debug", action="store_true")
-    p.add("device", nargs="+", type=int, help="Netbox device id") # TODO: script should take name and lookup the id in Netbox
+    p.add("device", nargs="+", type=int, help="Netbox device id")  # TODO: script should take name and lookup the id in Netbox
     # TODO: add in the location of the lshw.json and lsblk.json. A URL e.g. http://sdp-services.sdp.kat.ac.za/servers 
     # URL should contain a directory of system names. 
     # If no documents found just give warning and continue. 
@@ -231,6 +230,7 @@ def parse_args():
     logging.debug("Config: %s", config)
     return config
 
+
 def get_lshw():
     pfile = Path('lshw.json')
     data = {}
@@ -240,6 +240,7 @@ def get_lshw():
     if type(data) == list:
         data = data[0]
     return data
+
 
 def get_lsblk ():
     pfile = Path('lsblk.json')
@@ -261,16 +262,18 @@ def get_lsblk ():
 
     return data
 
+
 def main():
     config = parse_args()
-    path = "/api/dcim/devices/{}/".format(config['device'][0])
+    path = f"/api/dcim/devices/{config['device'][0]}/"
     query = {}
     netbox = query_netbox(config, path, query)
     lshw = get_lshw()
     lsblk = get_lsblk()
-    filename = "{}/index.rst".format(config['output_path'])
+    filename = f"{config['output_path']}/index.rst"
     page = DeviceDocument(filename, netbox, lshw, lsblk)
     page.write()
+
 
 if __name__ == "__main__":
     main()

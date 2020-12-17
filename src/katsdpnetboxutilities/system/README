@@ -1,4 +1,11 @@
 
+Developer Mode:
+Run device.py in  katsdpnetboxutilities/src/katsdpnetboxutilities/system
+To run it in developer mode: ./device.py -o /tmp/doc -n epyc01 164
+It will probably bomb since it cannot find files: 
+just do "sudo lshw --json > lshw.json" in that dir.
+
+Sphinx
 docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc sphinx-init --project=systemX
 device.py -o /tmp/doc systemX
 docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc make html
