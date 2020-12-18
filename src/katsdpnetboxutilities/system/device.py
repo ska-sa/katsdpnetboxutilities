@@ -84,7 +84,11 @@ class RemoteDeviceInfo:
         return lshw
 
     def get_lsblk(self):
-        return {}
+        lsblk = self._cache.get("lsblk")
+        if lsblk is None:
+            lsblk = self.get_file_from_remote("lsblk.json")
+            self._cache["lsblk"] = lsblk
+        return lsblk
 
     def lshw_core(self):
         """Helper method to return only the lshw core"""
@@ -94,6 +98,14 @@ class RemoteDeviceInfo:
                 return child
         return {}
 
+    def lsblk_devices(self):
+        lsblk = self.get_lsblk()
+        data = {}
+        for blkdev in lsblk.get("blockdevices", []):
+            pprint(blkdev)
+            if blkdev.get("type") not in ["loop"]:
+                data[blkdev["name"]] = blkdev
+        return data
 
 class Page:
     def __init__(self):
@@ -241,11 +253,10 @@ class DeviceDocument:
 
     def _add_disk(self):
         self.page.heading("Disks", 2)
-        disks = self._device_info.get_lsblk().get("devices", {})
+        disks = self._device_info.lsblk_devices()
         for dev in sorted(disks.keys()):
             self.page.heading("WWN:" + disks[dev]["wwn"], 3)
             rows = []
-            # rows.append(self._get_value_for_table(disks[dev], 'wwn'))
             rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
             rows.append(self._get_value_for_table(disks[dev], "model"))
             rows.append(self._get_value_for_table(disks[dev], "size"))
@@ -316,7 +327,7 @@ def main():
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    filename = f"{config['output_path']}/index.rst"
+    filename = f"{config['output_path']}/source/{config['device_name']}/index.rst"
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(filename, netbox, device_info)
     print(page)
