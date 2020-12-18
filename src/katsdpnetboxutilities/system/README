@@ -6,12 +6,13 @@ Developer Mode:
 
 Run device.py in katsdpnetboxutilities/src/katsdpnetboxutilities/system
 1) `sudo lshw --json > lshw.json`
-2) `./device.py -o /tmp/doc --device epyc01 --lsblk ./lsblk.json --lshw ./lshw.json`
+2) `./device.py -o /tmp/doc epyc01`
 
 Sphinx:
 -------
-
-docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc sphinx-init --project=systemX
-device.py -o /tmp/doc systemX
-docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc make html
-docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc make latexpdf
+1) docker pull ddidier/sphinx-doc:3.2.1-1
+1) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 sphinx-init --project=sdp-systems
+1) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 sphinx-init -make clean
+2) `./device.py -o /tmp/doc --device epyc01`
+3) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 make html
+4) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 make latexpdf
