@@ -237,8 +237,8 @@ class DeviceDocument:
         self._add_location()
         self._add_disk()
         self._add_fs()
-        self._add_cpu()
-        self._add_memory()
+        #self._add_cpu()
+        #self._add_memory()
         self.page.write(self.filename)
 
 
