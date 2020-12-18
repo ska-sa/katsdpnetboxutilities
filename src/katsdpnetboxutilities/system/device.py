@@ -189,8 +189,8 @@ class DeviceDocument:
         self._add_location()
         self._add_disk()
         self._add_fs()
-        #self._add_cpu()
-        #self._add_memory()
+        self._add_cpu()
+        self._add_memory()
         self.page.write(self.filename)
 
 
@@ -288,10 +288,8 @@ def main():
     print(f"path = {path}")
     query = {}
     netbox = query_netbox(config, path, query)
-    lshw = get_lshw()
-    lsblk = get_lsblk()
     filename = f"{config['output_path']}/index.rst"
-    page = DeviceDocument(filename, netbox, lshw, lsblk)
+    page = DeviceDocument(filename, netbox, get_lshw(), get_lsblk())
     print(page)
     page.write()
 
