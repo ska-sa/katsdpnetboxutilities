@@ -19,11 +19,12 @@ class RemoteDeviceInfo:
 
     """
 
-    def __init__(self, url):
+    def __init__(self, url, device_name):
         self.url = url
+        self.device_name = device_name
         self._cache = {}
 
-    def get_lshw(self):
+    def a_get_lshw(self):
         pfile = Path("lshw.json")
         data = {}
         if pfile.exists():
@@ -33,7 +34,7 @@ class RemoteDeviceInfo:
             data = data[0]
         return data
 
-    def get_lsblk(self):
+    def a_get_lsblk(self):
         pfile = Path("lsblk.json")
         data = {}
         if pfile.exists():
@@ -52,14 +53,37 @@ class RemoteDeviceInfo:
 
         return data
 
-    def _get_lshw(self):
+    def _remote_get(self, path, filename, is_json=True):
+        if path:
+            _url = "{}/{}/{}".format(
+                self.url.strip("/"), path.strip("/"), filename.strip("/")
+            )
+        else:
+            _url = "{}/{}".format(self.url.strip("/"), filename.strip("/"))
+        req = requests.get(_url)
+        if is_json:
+            return req.json()
+        else:
+            return req.body
+
+    def get_file_from_remote(self, filename, is_json=True):
+        data = self._remote_get(self.device_name, filename, is_json)
+        if data is None:
+            data = self._remote_get(None, filename, is_json)
+        if data is None:
+            data = self._remote_get(
+                "servers/{}".format(self.device_name), filename, is_json
+            )
+        return data
+
+    def get_lshw(self):
         lshw = self._cache.get("lshw")
         if lshw is None:
-            # Fetch lshw
-            lshw = {}
+            lshw = self.get_file_from_remote("lshw.json")
+            self._cache["lshw"] = lshw
         return lshw
 
-    def _get_lsblk(self):
+    def get_lsblk(self):
         return {}
 
     def lshw_core(self):
@@ -217,7 +241,7 @@ class DeviceDocument:
 
     def _add_disk(self):
         self.page.heading("Disks", 2)
-        disks = self._device_info.get_lsblk().get("devices",[])
+        disks = self._device_info.get_lsblk().get("devices", {})
         for dev in sorted(disks.keys()):
             self.page.heading("WWN:" + disks[dev]["wwn"], 3)
             rows = []
@@ -237,8 +261,8 @@ class DeviceDocument:
         self._add_location()
         self._add_disk()
         self._add_fs()
-        #self._add_cpu()
-        #self._add_memory()
+        # self._add_cpu()
+        # self._add_memory()
         self.page.write(self.filename)
 
 
@@ -288,12 +312,12 @@ def main():
     path = "/api/dcim/devices"
     query = {"name": config["device_name"]}
     netbox = query_netbox(config, path, query)
-    if netbox and netbox.get('count') == 1:
-        netbox = netbox['results'][0]
+    if netbox and netbox.get("count") == 1:
+        netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
     filename = f"{config['output_path']}/index.rst"
-    device_info = RemoteDeviceInfo(config["device_info"])
+    device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(filename, netbox, device_info)
     print(page)
     page.write()
