@@ -20,7 +20,7 @@ class RemoteDeviceInfo:
     """
 
     def __init__(self, url, device_name):
-        self.url = url
+        self.url = url or None
         self.device_name = device_name
         self._cache = {}
 
@@ -67,13 +67,19 @@ class RemoteDeviceInfo:
             return req.body
 
     def get_file_from_remote(self, filename, is_json=True):
+        # TODO: fix the retry 
+        if self.url is None:
+            logging.warning("No remote server defined, not fetching from remote.")
+            return {}
         data = self._remote_get(self.device_name, filename, is_json)
-        if data is None:
+        if not data is None:
             data = self._remote_get(None, filename, is_json)
         if data is None:
             data = self._remote_get(
                 "servers/{}".format(self.device_name), filename, is_json
             )
+        if not data:
+            logging.warning("No %s found on %s", filename, self.url)
         return data
 
     def get_lshw(self):
