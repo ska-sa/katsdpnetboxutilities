@@ -55,9 +55,11 @@ class RemoteDeviceInfo:
 
     def _remote_get(self, path, filename, is_json=True):
         if path:
-            _url = f'{self.url.strip("/")}/{path.strip("/")}/{filename.strip("/")}'
+            _url = "{}/{}/{}".format(
+                self.url.strip("/"), path.strip("/"), filename.strip("/")
+            )
         else:
-            _url = f'{self.url.strip("/")}/{filename.strip("/")}'
+            _url = "{}/{}".format(self.url.strip("/"), filename.strip("/"))
         req = requests.get(_url)
         if is_json:
             return req.json()
@@ -65,7 +67,7 @@ class RemoteDeviceInfo:
             return req.body
 
     def get_file_from_remote(self, filename, is_json=True):
-        # TODO: fix the retry 
+        # TODO: fix the retry
         if self.url is None:
             logging.warning("No remote server defined, not fetching from remote.")
             return {}
@@ -74,7 +76,7 @@ class RemoteDeviceInfo:
             data = self._remote_get(None, filename, is_json)
         if data is None:
             data = self._remote_get(
-                f'servers/{self.device_name}', filename, is_json
+                "servers/{}".format(self.device_name), filename, is_json
             )
         if not data:
             logging.warning("No %s found on %s", filename, self.url)
