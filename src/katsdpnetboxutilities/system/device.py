@@ -135,8 +135,8 @@ class Page:
         self._lines.append("   :header-rows: 0")
         self._lines.append(None)
         for row in rows:
-            self._lines.append(f"   * - {row[0]}")
-            self._lines.append(f"     - {row[1] if row[1] else ''}")
+            self._lines.append("   * - {}".format(row[0]))
+            self._lines.append("     - {}".format(row[1] if row[1] else ''))
         self._lines.append(None)
 
     def write(self, filename):
@@ -196,8 +196,11 @@ class DeviceDocument:
             self._get_value_for_table(cpu_info, "capacity", "Clock")
         )  # The Max clock
         cores_str = (
-            f"enabled: {cpu_info['configuration']['enabledcores']}/{cpu_info['configuration']['cores']}, "
-            f"threads {cpu_info['configuration']['threads']}"
+            "enabled: {}/{}, threads {}".format(
+                cpu_info['configuration']['enabledcores'],
+                cpu_info['configuration']['cores'],
+                cpu_info['configuration']['threads']
+            )
         )
         rows.append(("Cores", cores_str))
         capabilities = []
@@ -278,8 +281,8 @@ class DeviceDocument:
         self._add_location()
         self._add_disk()
         self._add_fs()
-        # self._add_cpu()
-        # self._add_memory()
+        self._add_cpu()
+        self._add_memory()
         self.page.write(self.filename)
 
 
@@ -333,7 +336,10 @@ def main():
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    filename = f"{config['output_path']}/source/{config['device_name']}/index.rst"
+    filename = "{}/source/{}/index.rst".format(
+        config['output_path'],
+        config['device_name']
+    )
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(filename, netbox, device_info)
     print(page)
