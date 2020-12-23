@@ -61,10 +61,13 @@ class RemoteDeviceInfo:
         else:
             _url = "{}/{}".format(self.url.strip("/"), filename.strip("/"))
         req = requests.get(_url)
-        if is_json:
-            return req.json()
+        if req.status_code == requests.codes.ok:
+            if is_json:
+                return req.json()
+            else:
+                return req.body
         else:
-            return req.body
+            logging.warning("Could not load - %s", _url)
 
     def get_file_from_remote(self, filename, is_json=True):
         # TODO: fix the retry
@@ -72,29 +75,29 @@ class RemoteDeviceInfo:
             logging.warning("No remote server defined, not fetching from remote.")
             return {}
         data = self._remote_get(self.device_name, filename, is_json)
-        if not data is None:
-            data = self._remote_get(None, filename, is_json)
         if data is None:
             data = self._remote_get(
                 "servers/{}".format(self.device_name), filename, is_json
             )
+        if data is None:
+            data = self._remote_get(None, filename, is_json)
         if not data:
             logging.warning("No %s found on %s", filename, self.url)
-        return data
+        return data or {}
 
-    def get_lshw(self):
+    def get_lshw(self) -> dict:
         lshw = self._cache.get("lshw")
         if lshw is None:
             lshw = self.get_file_from_remote("lshw.json")
             self._cache["lshw"] = lshw
-        return lshw
+        return lshw or {}
 
-    def get_lsblk(self):
+    def get_lsblk(self) -> dict:
         lsblk = self._cache.get("lsblk")
         if lsblk is None:
             lsblk = self.get_file_from_remote("lsblk.json")
             self._cache["lsblk"] = lsblk
-        return lsblk
+        return lsblk or {}
 
     def lshw_core(self):
         """Helper method to return only the lshw core"""
@@ -242,7 +245,7 @@ class DeviceDocument:
 
         memmap = {}
         for dimm in memory.get("children", []):
-            if dimm["vendor"] != "NO DIMM":
+            if 'vendor' in dimm and dimm["vendor"] != "NO DIMM":
                 memmap[dimm["slot"]] = dimm
 
         # TODO: Total Memory
@@ -264,13 +267,17 @@ class DeviceDocument:
         self.page.heading("Disks", 2)
         disks = self._device_info.lsblk_devices()
         for dev in sorted(disks.keys()):
-            self.page.heading("WWN:" + disks[dev]["wwn"], 3)
-            rows = []
-            rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
-            rows.append(self._get_value_for_table(disks[dev], "model"))
-            rows.append(self._get_value_for_table(disks[dev], "size"))
-            rows.append(self._get_value_for_table(disks[dev], "serial"))
-            self.page.ll_table(rows)
+            wwn = disks[dev].get('wwn')
+            if wwn is not None:
+                self.page.heading("WWN:" + disks[dev]["wwn"], 3)
+                rows = []
+                rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
+                rows.append(self._get_value_for_table(disks[dev], "model"))
+                rows.append(self._get_value_for_table(disks[dev], "size"))
+                rows.append(self._get_value_for_table(disks[dev], "serial"))
+                self.page.ll_table(rows)
+            else:
+                logging.warning("Not adding device %s", disks[dev])
 
     def _add_fs(self):
         pass
