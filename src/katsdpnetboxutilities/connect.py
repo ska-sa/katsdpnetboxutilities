@@ -12,7 +12,7 @@ QUERY_LIMIT_DEFAULT = 10000
 
 def _query_netbox(url, token, path, query=None):
     headers = {
-        "Authorization": "Token {token}".format(token),
+        "Authorization": "Token {}".format(token),
         "Content-Type": "application/json",
         "Accept": "application/json; indent=4",
     }
