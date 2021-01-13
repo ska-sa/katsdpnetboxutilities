@@ -29,10 +29,14 @@ def _query_netbox_url(url, path, query=None):
     return prepped.url
 
 
-def _load_cache(filename, config):
+def _load_cache(filename, config={}, age=600):
+    """
+    config argument is depricated will be removed.
+    """
+    cache_age = config.get("cache_age", age)
     if filename.is_file():
         age = time.time() - filename.stat().st_mtime
-        if age < (60 * config["cache_age"]):
+        if age < (60 * cache_age):
             with open(filename) as fh:
                 logging.info("Reading results from %s", filename)
                 return json.load(fh)
@@ -47,14 +51,16 @@ def _save_cache(data, filename):
         logging.debug("SaveCache: Missing data, nothing cached.")
 
 
-def query_netbox(config, path, query=None):
+def query_netbox(config, path, query=None, url=None, age=600, cache_path='/tmp'):
     data = None
-    url = config["url"]
+    cache_path = config.get("cache_path", cache_path)
+    cache_age = config.get("cache_age", age)
+    url = config.get("url", url)
 
-    if config["cache_path"]:
+    if cache_path:
         filename = slugify(_query_netbox_url(url, path, query)) + ".json"
-        cache_filename = Path(config["cache_path"]) / filename
-        data = _load_cache(cache_filename, config)
+        cache_filename = Path(cache_path) / filename
+        data = _load_cache(cache_filename, age=age)
 
     if not data:
         data = _query_netbox(url, config["token"], path, query)

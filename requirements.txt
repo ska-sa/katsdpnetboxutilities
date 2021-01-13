@@ -10,3 +10,16 @@ idna==2.10
 urllib3==1.25.8
 Unidecode==0.4.21
 katversion==1.1
+fastapi==0.63.0
+h11==0.12.0
+httptools==0.1.1
+pydantic==1.7.3
+python-dotenv==0.15.0
+starlette==0.13.6
+uvicorn==0.13.3
+uvloop==0.14.0
+watchgod==0.6
+websockets==8.1
+click==7.1.2
+typing-extensions==3.7.4.3
+dataclasses==0.6

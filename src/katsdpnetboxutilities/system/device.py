@@ -12,7 +12,7 @@ from katsdpnetboxutilities.connect import query_netbox
 
 
 class RemoteDeviceInfo:
-    """Manage the fetching of data files from a remote sorce.
+    """Manage the fetching of data files from a remote source.
 
     This class holds the normalisation code for the different datatypes.
     e.g., manages the small differences in format caused by the different version of the collection tools.
@@ -83,7 +83,8 @@ class RemoteDeviceInfo:
             data = self._remote_get(None, filename, is_json)
         if not data:
             logging.warning("No %s found on %s", filename, self.url)
-        return data or {}
+            data = {}
+        return data
 
     def get_lshw(self) -> dict:
         lshw = self._cache.get("lshw")
@@ -143,16 +144,23 @@ class Page:
         self._lines.append(None)
 
     def write(self, filename):
-        with open(filename, "w+") as fh:
+        if filename:
+            with open(filename, "w+") as fh:
+                for line in self._lines:
+                    if line:
+                        fh.write(line)
+                    fh.write("\n")
+        else:
+            output = ''
             for line in self._lines:
                 if line:
-                    fh.write(line)
-                fh.write("\n")
+                    output += line
+                output += "\n"
+            return output
 
 
 class DeviceDocument:
-    def __init__(self, filename, netbox, device_info):
-        self.filename = filename
+    def __init__(self, netbox, device_info):
         self._netbox = netbox
         self._device_info = device_info
         self.page = Page()
@@ -193,27 +201,30 @@ class DeviceDocument:
 
     def _add_cpu_table(self, cpu_info):
         rows = []
-        rows.append(self._get_value_for_table(cpu_info, "vendor"))
-        rows.append(self._get_value_for_table(cpu_info, "product"))  # or version
-        rows.append(
-            self._get_value_for_table(cpu_info, "capacity", "Clock")
-        )  # The Max clock
-        cores_str = (
-            "enabled: {}/{}, threads {}".format(
-                cpu_info['configuration']['enabledcores'],
-                cpu_info['configuration']['cores'],
-                cpu_info['configuration']['threads']
+        if cpu_info.get('disabled', False):
+            self.page.text("CPU is disabled")
+        else:
+            rows.append(self._get_value_for_table(cpu_info, "vendor"))
+            rows.append(self._get_value_for_table(cpu_info, "product"))  # or version
+            rows.append(
+                self._get_value_for_table(cpu_info, "capacity", "Clock")
+            )  # The Max clock
+            cores_str = (
+                "enabled: {}/{}, threads {}".format(
+                    cpu_info['configuration']['enabledcores'],
+                    cpu_info['configuration']['cores'],
+                    cpu_info['configuration']['threads']
+                )
             )
-        )
-        rows.append(("Cores", cores_str))
-        capabilities = []
-        for cap, val in cpu_info["capabilities"].items():
-            if val is True:
-                capabilities.append(cap)
-            else:
-                capabilities.append(val)
-        rows.append(("Capabilities", ", ".join(sorted(capabilities))))
-        self.page.ll_table(rows)
+            rows.append(("Cores", cores_str))
+            capabilities = []
+            for cap, val in cpu_info["capabilities"].items():
+                if val is True:
+                    capabilities.append(cap)
+                else:
+                    capabilities.append(val)
+            rows.append(("Capabilities", ", ".join(sorted(capabilities))))
+            self.page.ll_table(rows)
 
     def _add_cpu(self):
         # .[0].children[0].children[1]
@@ -241,7 +252,7 @@ class DeviceDocument:
                 memory = child
                 break
         else:
-            memory = None
+            memory = {}
 
         memmap = {}
         for dimm in memory.get("children", []):
@@ -282,15 +293,15 @@ class DeviceDocument:
     def _add_fs(self):
         pass
 
-    def write(self):
-        self.page.heading(self._netbox["name"], 1)
+    def write(self, filename: str = None):
+        self.page.heading(self._netbox.get("name", 'not found' ), 1)
         self._add_general()
         self._add_location()
         self._add_disk()
         self._add_fs()
         self._add_cpu()
         self._add_memory()
-        self.page.write(self.filename)
+        return self.page.write(filename)
 
 
 def parse_args():
@@ -332,6 +343,22 @@ def parse_args():
     logging.debug("Config: %s", config)
     return config
 
+def host_report(hostname, settings):
+    config = vars(settings)
+    config['url'] = config['netbox_url']
+    config['token'] = config['netbox_token']
+    config['device_info'] = config['device_info_url']
+    config['device_name'] = hostname
+    path = "/api/dcim/devices"
+    query = {"name": config["device_name"]}
+    netbox = query_netbox(config, path, query)
+    if netbox and netbox.get("count") == 1:
+        netbox = netbox["results"][0]
+    else:
+        logging.error("Could not get device")
+    device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
+    page = DeviceDocument(netbox, device_info)
+    return page.write()
 
 def main():
     config = parse_args()
@@ -348,9 +375,9 @@ def main():
         config['device_name']
     )
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
-    page = DeviceDocument(filename, netbox, device_info)
+    page = DeviceDocument(netbox, device_info)
     print(page)
-    page.write()
+    page.write(filename)
 
 
 if __name__ == "__main__":
