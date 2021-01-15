@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     netbox_token: str
     netbox_url: str
-    cache_path: str = "/tmp/cache"
+    cache_path: str = "/tmp/netbox-cache"
     cache_age: int = 600
     output_path: str = "/tmp/netboxutils"
     verbose: bool = False
@@ -41,7 +41,8 @@ async def root():
 
 @app.get("/hostreport/{hostname}/index.rst", response_class=PlainTextResponse)
 async def hostreport_get(hostname: str, settings: Settings = Depends(get_settings)):
-    return host_report(hostname, settings )
+    return host_report(hostname, settings)
+
 
 @app.post("/hostreport/{hostname}/index.rst")
 async def hostreport_post(hostname: str):

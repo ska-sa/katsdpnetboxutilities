@@ -23,6 +23,7 @@ LABEL maintainer="sdpdev+katsdpnetboxutilities@ska.ac.za"
 
 RUN mkdir -p /srv
 RUN mkdir -p /tmp/netbox-cache
+RUN mkdir -p /tmp/netboxutils
 COPY --chown=kat:kat src/katsdpnetboxutilities/service/* /srv/
 
 COPY --from=build --chown=kat:kat /home/kat/ve3 /home/kat/ve3

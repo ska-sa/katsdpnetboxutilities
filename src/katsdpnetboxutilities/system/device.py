@@ -343,6 +343,7 @@ def parse_args():
     logging.debug("Config: %s", config)
     return config
 
+
 def host_report(hostname, settings):
     config = vars(settings)
     config['url'] = config['netbox_url']
@@ -359,6 +360,7 @@ def host_report(hostname, settings):
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(netbox, device_info)
     return page.write()
+
 
 def main():
     config = parse_args()
