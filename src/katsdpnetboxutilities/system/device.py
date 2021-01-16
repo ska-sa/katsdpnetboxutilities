@@ -185,6 +185,11 @@ class DeviceDocument:
     def _add_general(self):
         rows = []
         rows.append(self._get_value_for_table(self._netbox, "status"))
+        rows.append(self._get_value_for_table(self._netbox, "id"))
+        #`CNN <http://cnn.com>`_
+        rows.append(("Netbox URL", "`{} <{}>`_".format(
+            self._get_value_for_table(self._netbox, "url")[1],
+            self._get_value_for_table(self._netbox, "url")[1])))
         rows.append(self._get_value_for_table(self._netbox, "serial"))
         rows.append(self._get_value_for_table(self._netbox, "device_role"))
         rows.append(self._get_value_for_table(self._netbox, "device_type"))
