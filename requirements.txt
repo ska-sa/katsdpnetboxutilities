@@ -23,3 +23,4 @@ websockets==8.1
 click==7.1.2
 typing-extensions==3.7.4.3
 dataclasses==0.6
+boltons==20.2.1

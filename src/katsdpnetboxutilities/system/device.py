@@ -5,6 +5,7 @@ import json
 import logging
 import requests
 
+from boltons.strutils import bytes2human
 from pathlib import Path
 from pprint import pprint
 
@@ -269,8 +270,8 @@ class DeviceDocument:
             rows.append(self._get_value_for_table(memmap[slot], "description"))
             rows.append(self._get_value_for_table(memmap[slot], "vendor"))
             rows.append(self._get_value_for_table(memmap[slot], "product"))
-            rows.append(self._get_value_for_table(memmap[slot], "size"))
-            rows.append(self._get_value_for_table(memmap[slot], "clock"))
+            rows.append((self._get_value_for_table(memmap[slot], "size")[0], bytes2human(self._get_value_for_table(memmap[slot], "size")[1], ndigits=2)))
+            rows.append((self._get_value_for_table(memmap[slot], "clock")[0], str(int(self._get_value_for_table(memmap[slot], "clock")[1] / 1000000)) + " MHz"))
             rows.append(self._get_value_for_table(memmap[slot], "serial"))
             self.page.ll_table(rows)
 
