@@ -254,7 +254,8 @@ class DeviceDocument:
         self.page.heading("Memory", 2)
         core = self._device_info.lshw_core()
         for child in core.get("children", []):
-            if child.get("id") == "memory":
+            if child.get("id")\
+                    == "memory":
                 memory = child
                 break
         else:
@@ -292,6 +293,9 @@ class DeviceDocument:
                 rows = []
                 rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
                 rows.append(self._get_value_for_table(disks[dev], "model"))
+                print(self._get_value_for_table(disks[dev], "size")[1])
+                rows.append((self._get_value_for_table(disks[dev], "size")[0],
+                             bytes2human(int(self._get_value_for_table(disks[dev], "size")[1]), ndigits=2)))
                 rows.append(self._get_value_for_table(disks[dev], "size"))
                 rows.append(self._get_value_for_table(disks[dev], "serial"))
                 self.page.ll_table(rows)
