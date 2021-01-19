@@ -11,7 +11,6 @@ from pprint import pprint
 
 from katsdpnetboxutilities.connect import query_netbox
 
-
 class RemoteDeviceInfo:
     """Manage the fetching of data files from a remote source.
 
@@ -186,7 +185,6 @@ class DeviceDocument:
         rows = []
         rows.append(self._get_value_for_table(self._netbox, "status"))
         rows.append(self._get_value_for_table(self._netbox, "id"))
-        #`CNN <http://cnn.com>`_
         rows.append(("Netbox URL", "`{} <{}>`_".format(
             self._get_value_for_table(self._netbox, "url")[1],
             self._get_value_for_table(self._netbox, "url")[1])))
@@ -210,18 +208,23 @@ class DeviceDocument:
         if cpu_info.get('disabled', False):
             self.page.text("CPU is disabled")
         else:
+            print(self._get_value_for_table(cpu_info, "vendor"))
             rows.append(self._get_value_for_table(cpu_info, "vendor"))
-            rows.append(self._get_value_for_table(cpu_info, "product"))  # or version
-            rows.append(
-                self._get_value_for_table(cpu_info, "capacity", "Clock")
-            )  # The Max clock
-            cores_str = (
-                "enabled: {}/{}, threads {}".format(
-                    cpu_info['configuration']['enabledcores'],
-                    cpu_info['configuration']['cores'],
-                    cpu_info['configuration']['threads']
-                )
-            )
+            if self._get_value_for_table(cpu_info, "product") is not None:
+                rows.append(self._get_value_for_table(cpu_info, "product"))
+            elif self._get_value_for_table(cpu_info, "version") is not None:
+                rows.append(self._get_value_for_table(cpu_info, "version"))
+            if self._get_value_for_table(cpu_info, "clock") is not None:
+                rows.append((self._get_value_for_table(cpu_info, "clock")[0],
+                             bytes2human(int(self._get_value_for_table(cpu_info, "clock")[1]), ndigits=2)))
+            elif self._get_value_for_table(cpu_info, "capacity") is not None:
+                rows.append((self._get_value_for_table(cpu_info, "capacity")[0],
+                             bytes2human(int(self._get_value_for_table(cpu_info, "capacity")[1]), ndigits=2)))
+            cores_str = ("enabled: {}/{}, threads {}".format(cpu_info['configuration']['enabledcores'],
+                                                             cpu_info['configuration']['cores'],
+                                                             cpu_info['configuration']['threads']
+                                                             )
+                         )
             rows.append(("Cores", cores_str))
             capabilities = []
             for cap, val in cpu_info["capabilities"].items():
@@ -254,8 +257,7 @@ class DeviceDocument:
         self.page.heading("Memory", 2)
         core = self._device_info.lshw_core()
         for child in core.get("children", []):
-            if child.get("id")\
-                    == "memory":
+            if child.get("id") == "memory":
                 memory = child
                 break
         else:
@@ -279,7 +281,7 @@ class DeviceDocument:
             rows.append((self._get_value_for_table(memmap[slot], "size")[0],
                          bytes2human(self._get_value_for_table(memmap[slot], "size")[1], ndigits=2)))
             rows.append((self._get_value_for_table(memmap[slot], "clock")[0],
-                         str(int(self._get_value_for_table(memmap[slot], "clock")[1] / 1000000)) + " MHz"))
+                         str(int(self._get_value_for_table(memmap[slot], "clock")[1] / 1000000)) + "MHz"))
             rows.append(self._get_value_for_table(memmap[slot], "serial"))
             self.page.ll_table(rows)
 
@@ -291,9 +293,9 @@ class DeviceDocument:
             if wwn is not None:
                 self.page.heading("WWN:" + disks[dev]["wwn"], 3)
                 rows = []
+                rows.append(self._get_value_for_table(disks[dev], "vendor"))
                 rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
                 rows.append(self._get_value_for_table(disks[dev], "model"))
-                print(self._get_value_for_table(disks[dev], "size")[1])
                 rows.append((self._get_value_for_table(disks[dev], "size")[0],
                              bytes2human(int(self._get_value_for_table(disks[dev], "size")[1]), ndigits=2)))
                 rows.append(self._get_value_for_table(disks[dev], "size"))
