@@ -278,7 +278,9 @@ class DeviceDocument:
         self.page.heading("Memory", 2)
         core = self._device_info.lshw_core()
         for child in core.get("children", []):
-            if "memory" in child.get("id"):
+            if child.get("id") in ["memory", "memory:0", "memory:1","memory:2", "memory:3", "memory:4", "memory:5",
+                                   "memory:6"]:
+            #if "memory" in child.get("id"):
                 memory = child
                 break
         else:
@@ -398,7 +400,7 @@ def host_report(hostname, settings):
 
 def main():
     config = parse_args()
-##    pprint(config)
+    pprint(config)
     path = "/api/dcim/devices"
     query = {"name": config["device_name"]}
     netbox = query_netbox(config, path, query)
@@ -412,7 +414,7 @@ def main():
     )
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(netbox, device_info)
-##    print(page)
+    print(page)
     page.write(filename)
 
 
