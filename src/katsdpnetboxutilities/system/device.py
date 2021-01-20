@@ -11,6 +11,28 @@ from pprint import pprint
 
 from katsdpnetboxutilities.connect import query_netbox
 
+def format_bytes(size):
+    # 2**10 = 1024
+    size = int(size)
+    power = 2**10
+    n = 0
+    power_labels = {0: '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
+    while size > power:
+        size /= power
+        n += 1
+    if power_labels[n] == "kilo":
+        suffix = "KB"
+    elif power_labels[n] == "mega":
+        suffix = "MB"
+    elif power_labels[n] == "giga":
+        suffix = "GB"
+    elif power_labels[n] == "tera":
+        suffix = "TB"
+    else:
+        suffix = ""
+    return "{}{}".format(size, suffix)
+
+
 class RemoteDeviceInfo:
     """Manage the fetching of data files from a remote source.
 
@@ -208,7 +230,6 @@ class DeviceDocument:
         if cpu_info.get('disabled', False):
             self.page.text("CPU is disabled")
         else:
-            print(self._get_value_for_table(cpu_info, "vendor"))
             rows.append(self._get_value_for_table(cpu_info, "vendor"))
             if self._get_value_for_table(cpu_info, "product") is not None:
                 rows.append(self._get_value_for_table(cpu_info, "product"))
@@ -216,10 +237,10 @@ class DeviceDocument:
                 rows.append(self._get_value_for_table(cpu_info, "version"))
             if self._get_value_for_table(cpu_info, "clock") is not None:
                 rows.append((self._get_value_for_table(cpu_info, "clock")[0],
-                             bytes2human(int(self._get_value_for_table(cpu_info, "clock")[1]), ndigits=2)))
+                             bytes2human(int(self._get_value_for_table(cpu_info, "clock")[1]), ndigits=2)+"Hz"))
             elif self._get_value_for_table(cpu_info, "capacity") is not None:
                 rows.append((self._get_value_for_table(cpu_info, "capacity")[0],
-                             bytes2human(int(self._get_value_for_table(cpu_info, "capacity")[1]), ndigits=2)))
+                             bytes2human(int(self._get_value_for_table(cpu_info, "capacity")[1]), ndigits=2)+"Hz"))
             cores_str = ("enabled: {}/{}, threads {}".format(cpu_info['configuration']['enabledcores'],
                                                              cpu_info['configuration']['cores'],
                                                              cpu_info['configuration']['threads']
@@ -257,7 +278,7 @@ class DeviceDocument:
         self.page.heading("Memory", 2)
         core = self._device_info.lshw_core()
         for child in core.get("children", []):
-            if child.get("id") == "memory":
+            if "memory" in child.get("id"):
                 memory = child
                 break
         else:
@@ -279,7 +300,7 @@ class DeviceDocument:
             rows.append(self._get_value_for_table(memmap[slot], "vendor"))
             rows.append(self._get_value_for_table(memmap[slot], "product"))
             rows.append((self._get_value_for_table(memmap[slot], "size")[0],
-                         bytes2human(self._get_value_for_table(memmap[slot], "size")[1], ndigits=2)))
+                         format_bytes(self._get_value_for_table(memmap[slot], "size")[1])))
             rows.append((self._get_value_for_table(memmap[slot], "clock")[0],
                          str(int(self._get_value_for_table(memmap[slot], "clock")[1] / 1000000)) + "MHz"))
             rows.append(self._get_value_for_table(memmap[slot], "serial"))
@@ -297,8 +318,7 @@ class DeviceDocument:
                 rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
                 rows.append(self._get_value_for_table(disks[dev], "model"))
                 rows.append((self._get_value_for_table(disks[dev], "size")[0],
-                             bytes2human(int(self._get_value_for_table(disks[dev], "size")[1]), ndigits=2)))
-                rows.append(self._get_value_for_table(disks[dev], "size"))
+                             format_bytes(self._get_value_for_table(disks[dev], "size")[1])))
                 rows.append(self._get_value_for_table(disks[dev], "serial"))
                 self.page.ll_table(rows)
             else:
@@ -308,7 +328,7 @@ class DeviceDocument:
         pass
 
     def write(self, filename: str = None):
-        self.page.heading(self._netbox.get("name", 'not found' ), 1)
+        self.page.heading(self._netbox.get("name", 'not found'), 1)
         self._add_general()
         self._add_location()
         self._add_disk()
@@ -378,7 +398,7 @@ def host_report(hostname, settings):
 
 def main():
     config = parse_args()
-    pprint(config)
+##    pprint(config)
     path = "/api/dcim/devices"
     query = {"name": config["device_name"]}
     netbox = query_netbox(config, path, query)
@@ -392,7 +412,7 @@ def main():
     )
     device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
     page = DeviceDocument(netbox, device_info)
-    print(page)
+##    print(page)
     page.write(filename)
 
 
