@@ -1,11 +1,26 @@
 ConfigArgParse==1.2.3
 graphviz==0.14.1
-regex                  # for awesome-slugify
-unicode                # for awesome-slugify
+regex==2020.11.13
+unicode==2.7
 awesome-slugify==1.6.5
-requests
-certifi                # for requests
-chardet                # for requests
-idna                   # for requests
-urllib3                # for requests
-katversion
+requests==2.25.0
+certifi==2020.11.8
+chardet==3.0.4
+idna==2.10
+urllib3==1.25.8
+Unidecode==0.4.21
+katversion==1.1
+fastapi==0.63.0
+h11==0.12.0
+httptools==0.1.1
+pydantic==1.7.3
+python-dotenv==0.15.0
+starlette==0.13.6
+uvicorn==0.13.3
+uvloop==0.14.0
+watchgod==0.6
+websockets==8.1
+click==7.1.2
+typing-extensions==3.7.4.3
+dataclasses==0.6
+boltons==20.2.1

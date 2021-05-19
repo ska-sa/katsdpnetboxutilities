@@ -1,0 +1,13 @@
+---
+
+version: '2'
+services:
+  registry:
+    image: registry:2.5
+    ports:
+      - "8111:8000"
+    volumes:
+      - /opt/katsdpnetboxutilities/src/katsdpnetboxutilities/service/.env:/srv/.env
+      - /tmp/cache:/tmp/cache
+      - /tmp/netboxutils:/tmp/netboxutils
+
