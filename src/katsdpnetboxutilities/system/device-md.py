@@ -146,9 +146,7 @@ class Page:
         self._lines = []
 
     def heading(self, heading, level):
-        c = {1: "#", 2: "*", 3: "="}.get(level, "=")
-        self._lines.append(heading)
-        self._lines.append(c * len(heading))
+        self._lines.append("#" * level + " " + heading)
         self._lines.append(None)
 
     def text(self, text):
@@ -158,13 +156,10 @@ class Page:
         """List-List no header table"""
         # Not a table just text now.
         self._lines.append(None)
-        self._lines.append(".. list-table::")
-        self._lines.append("   :widths: 10 25")
-        self._lines.append("   :header-rows: 0")
-        self._lines.append(None)
+        self._lines.append("| one | two |")
+        self._lines.append("| ----- | ----- |")
         for row in rows:
-            self._lines.append("   * - {}".format(row[0]))
-            self._lines.append("     - {}".format(row[1] if row[1] else ""))
+            self._lines.append("| {} | {} |".format(row[0], row[1]))
         self._lines.append(None)
 
     def write(self, filename):
@@ -212,7 +207,7 @@ class DeviceDocument:
         rows.append(
             (
                 "Netbox URL",
-                "`{} <{}>`_".format(
+                "[{}]({})".format(
                     self._get_value_for_table(self._netbox, "url")[1],
                     self._get_value_for_table(self._netbox, "url")[1],
                 ),
@@ -460,9 +455,7 @@ def main():
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    filename = "{}/source/{}/index.rst".format(
-        config["output_path"], config["device_name"]
-    )
+    filename = "{}/index.md".format(config["output_path"])
     device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
     print(page)

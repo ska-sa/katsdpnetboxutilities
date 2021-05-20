@@ -1,0 +1,19 @@
+site_name: SDP Servers
+nav:
+  - Home: index.md
+
+site_dir: '/docs/site'
+extra_css:
+  - page.css
+plugins:
+  - awesome-pages
+  - ezlinks:
+      wikilinks: true
+  - autolink_references:
+      autolinks:
+        - reference_prefix: SPR1-
+          target_url: https://skaafrica.atlassian.net/browse/SPR1-<num>
+  - pdf-export:
+      verbose: true
+      media_type: print
+      combined: true

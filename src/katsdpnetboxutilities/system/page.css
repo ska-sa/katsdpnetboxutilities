@@ -1,0 +1,56 @@
+@page {
+    size: a4 portrait;
+    margin: 25mm 10mm 25mm 10mm;
+    counter-increment: page;
+    font-family: "Roboto","Helvetica Neue",Helvetica,Arial,sans-serif;
+    white-space: pre;
+    color: grey;
+    @bottom-left {
+        content: '© 2021 SARAO SDP';
+    }
+    @top-center {
+        content: string(chapter);
+    }
+    @bottom-right {
+        content: 'Page ' counter(page);
+    }
+}
+html table {
+    /* border-collapse: collapse; */
+    width: 100%; 
+}
+html table th {
+    border-bottom: .2mm solid #00ffff;
+    color: #ff00ff;
+    font-size: 10pt;
+    font-weight: 400;
+    padding-bottom: .25cm;
+    text-transform: uppercase; 
+}
+html table td {
+    padding-top: 7mm; 
+}
+html table td:last-of-type {
+    color: #dd0000;
+    font-weight: bold;
+    text-align: right; 
+}
+html table th, html table td {
+    text-align: right; 
+}
+html table th:first-of-type, html table td:first-of-type {
+    text-align: right; 
+}
+html table th:last-of-type, html table td:last-of-type {
+    text-align: left; 
+}
+html table#total {
+    background: #ff0000;
+    border-color: #ff00ff;
+    border-style: solid;
+    border-width: 2cm 3cm;
+    bottom: 0;
+    font-size: 20pt;
+    margin: 0 -3cm;
+    position: absolute;
+}
