@@ -21,3 +21,9 @@ Run device.py in katsdpnetboxutilities/src/katsdpnetboxutilities/system
 2) `./device.py --device-info http://sdp-services.sdp.kat.ac.za/servers -o /tmp/doc epyc01`
 3) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 make html
 4) docker run -it -v /tmp/doc:/doc -e USER_ID=$UID ddidier/sphinx-doc:3.2.1-1 make latexpdf
+
+## Build with Pandoc
+
+Sphinx is cumbersom to run, mkdocs produce very nice HTML reports fast but the PDF reports are not nice. A Quick check of pandocs seems to produce PDFs quickly and it can be used to convert from RST to MD.
+
+docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/ubuntu-latex --toc --to pdf --variable sansfont="Arial" --variable monofont="Menlo" --variable fontsize=12pt -o /data/cal1.pdf --defaults=pandoc.yaml index.rst
