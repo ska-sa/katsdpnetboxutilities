@@ -1,0 +1,360 @@
+# not found
+
+
+| one | two |
+| ----- | ----- |
+| Status | None |
+| Id | None |
+| Netbox URL | [None](None) |
+| Serial | None |
+| Device Role | None |
+| Device Type | None |
+
+## Location
+
+
+| one | two |
+| ----- | ----- |
+| Site | None |
+| Rack | None |
+| U | None |
+| Face | None |
+
+## Disks
+
+### WWN:0x614187705e5afc001eb4e12f06e758e7
+
+
+| one | two |
+| ----- | ----- |
+| Vendor | DELL     |
+| Spinning Disk | 1 |
+| Model | PERC H730 Mini   |
+| Size | 465.25GB |
+| Serial | 614187705e5afc001eb4e12f06e758e7 |
+
+### WWN:0x614187705e5afc001eb4e13106ff69a3
+
+
+| one | two |
+| ----- | ----- |
+| Vendor | DELL     |
+| Spinning Disk | 1 |
+| Model | PERC H730 Mini   |
+| Size | 2.72607421875TB |
+| Serial | 614187705e5afc001eb4e13106ff69a3 |
+
+## CPU
+
+### CPU1
+
+
+| one | two |
+| ----- | ----- |
+| Vendor | Intel Corp. |
+| Product | Intel(R) Xeon(R) CPU E5-2637 v3 @ 3.50GHz |
+| Clock | 963.27MHz |
+| Cores | enabled: 4/4, threads 4 |
+| Capabilities | 36-bit page size extensions, 4GB+ memory addressing (Physical Address Extension), 64bits extensions (x86-64), FPU exceptions reporting, HyperThreading, abm, aes, aperfmperf, arat, arch_perfmon, avx, avx2, bmi1, bmi2, bts, clflush, compare and exchange 8-byte, conditional move instruction, constant_tsc, cpuid, cpuid_fault, cqm, cqm_llc, cqm_occup_llc, cx16, dca, debug trace and EMON store MSRs, debugging extensions, ds_cpl, dtes64, dtherm, epb, ept, ept_ad, erms, est, f16c, fast floating point save/restore, fast system calls, fast system calls, flexpriority, flush_l1d, fma, fsgsbase, ibpb, ibrs, ida, invpcid, invpcid_single, lahf_lm, machine check architecture, machine check exceptions, mathematical co-processor, md_clear, memory type range registers, model-specific registers, monitor, movbe, multimedia extensions (MMX), no-execute bit (NX), nonstop_tsc, nopl, on-chip advanced programmable interrupt controller (APIC), page attribute table, page global enable, page size extensions, pcid, pclmulqdq, pdcm, pdpe1gb, pebs, pending break event, pln, pni, popcnt, pti, pts, rdrand, rdtscp, rep_good, sdbg, self-snoop, smep, smx, ssbd, sse4_1, sse4_2, ssse3, stibp, streaming SIMD extensions (SSE), streaming SIMD extensions (SSE2), thermal control (ACPI), thermal interrupt and status, time stamp counter, tm2, tpr_shadow, tsc_adjust, tsc_deadline_timer, virtual mode extensions, vmx, vnmi, vpid, wp, x2apic, xsave, xsaveopt, xtopology, xtpr |
+
+### CPU2
+
+
+| one | two |
+| ----- | ----- |
+| Vendor | Intel Corp. |
+| Product | Intel(R) Xeon(R) CPU E5-2637 v3 @ 3.50GHz |
+| Clock | 963.27MHz |
+| Cores | enabled: 4/4, threads 4 |
+| Capabilities | 36-bit page size extensions, 4GB+ memory addressing (Physical Address Extension), 64bits extensions (x86-64), FPU exceptions reporting, HyperThreading, abm, aes, aperfmperf, arat, arch_perfmon, avx, avx2, bmi1, bmi2, bts, clflush, compare and exchange 8-byte, conditional move instruction, constant_tsc, cpuid, cpuid_fault, cqm, cqm_llc, cqm_occup_llc, cx16, dca, debug trace and EMON store MSRs, debugging extensions, ds_cpl, dtes64, dtherm, epb, ept, ept_ad, erms, est, f16c, fast floating point save/restore, fast system calls, fast system calls, flexpriority, flush_l1d, fma, fsgsbase, ibpb, ibrs, ida, invpcid, invpcid_single, lahf_lm, machine check architecture, machine check exceptions, mathematical co-processor, md_clear, memory type range registers, model-specific registers, monitor, movbe, multimedia extensions (MMX), no-execute bit (NX), nonstop_tsc, nopl, on-chip advanced programmable interrupt controller (APIC), page attribute table, page global enable, page size extensions, pcid, pclmulqdq, pdcm, pdpe1gb, pebs, pending break event, pln, pni, popcnt, pti, pts, rdrand, rdtscp, rep_good, sdbg, self-snoop, smep, smx, ssbd, sse4_1, sse4_2, ssse3, stibp, streaming SIMD extensions (SSE), streaming SIMD extensions (SSE2), thermal control (ACPI), thermal interrupt and status, time stamp counter, tm2, tpr_shadow, tsc_adjust, tsc_deadline_timer, virtual mode extensions, vmx, vnmi, vpid, wp, x2apic, xsave, xsaveopt, xtopology, xtpr |
+
+## Memory
+
+### A1
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D78 |
+
+### A10
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E60D3 |
+
+### A11
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6088 |
+
+### A12
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E60E3 |
+
+### A2
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4DA0 |
+
+### A3
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D7A |
+
+### A4
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4DD9 |
+
+### A5
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6098 |
+
+### A6
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6096 |
+
+### A7
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6012 |
+
+### A8
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4DC2 |
+
+### A9
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E600F |
+
+### B1
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D80 |
+
+### B10
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D8B |
+
+### B11
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E60F1 |
+
+### B12
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E60FB |
+
+### B2
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4DAE |
+
+### B3
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D75 |
+
+### B4
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D81 |
+
+### B5
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D8C |
+
+### B6
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913D4D97 |
+
+### B7
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6101 |
+
+### B8
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E609A |
+
+### B9
+
+
+| one | two |
+| ----- | ----- |
+| Description | DIMM DDR4 Synchronous Registered (Buffered) LRDIMM 2133 MHz (0.5 ns) |
+| Vendor | 00AD00B300AD |
+| Product | HMA84GL7AMR4N-TF |
+| Size | 32.0GB |
+| Clock | 2133MHz |
+| Serial | 913E6084 |
+

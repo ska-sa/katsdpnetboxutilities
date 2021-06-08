@@ -1,4 +1,4 @@
-#from: 
+#from:
 # reader: may be used instead of from:
 #to: html5
 # writer: may be used instead of to:
@@ -21,6 +21,7 @@
 #- defsA
 #- defsB
 
+
 #template: a4
 standalone: true
 self-contained: true
@@ -37,6 +38,9 @@ variables:
 metadata:
   author:
   - SARAO SDP
+  title:
+    - SDP Systems
+  #date:
 #metadata-files:
 #- boilerplate.yaml
 # or you may use metadata-file: with a single value
@@ -44,8 +48,9 @@ metadata:
 # Note that these take files, not their contents:
 include-before-body: []
 include-after-body: []
-include-in-header: []
+include-in-header: [header.tex]
 resource-path: ["."]
+
 
 # turn on built-in citation processing.  Note that if you need
 # control over when the citeproc processing is done relative
@@ -100,10 +105,12 @@ dpi: 72
 extract-media: mediadir
 
 table-of-contents: true
-toc-depth: 2
+toc-depth: 4
 number-sections: true
 # a list of offsets at each heading level
-number-offset: [0,0,0,0,0,0]
+#number-offset: [1,1,1,1,1,1]
+#number-offset: 1
+
 # toc: may also be used instead of table-of-contents:
 shift-heading-level-by: 1
 section-divs: true
@@ -140,6 +147,7 @@ preserve-tabs: true
 incremental: false
 slide-level: 2
 
+
 #epub-subdirectory: EPUB
 #epub-metadata: meta.xml
 #epub-fonts:
@@ -164,7 +172,7 @@ ipynb-output: best
 
 # A list of two-element lists
 request-headers:
-- ["User-Agent", "Mozilla/5.0"]
+  - ["User-Agent", "Mozilla/5.0"]
 
 fail-if-warnings: false
 dump-args: false

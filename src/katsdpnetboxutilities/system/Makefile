@@ -2,15 +2,13 @@
 run:
 	SERVER_NAME=$1
 	mkdir -p docs/docs
-	./device-md.py --device-info http://sdp-services.sdp.kat.ac.za/servers -o ./docs/docs $(name)
-	docker run -it -v ${PWD}/docs:/docs -v ${PWD}/mkdocs.yml:/docs/mkdocs.yml:ro -v ${PWD}/page.css:/docs/docs/page.css sysinfo build
-	cp docs/site/pdf/combined.pdf $(name).pdf
-	cp docs/docs/index.md $(name).md
-	curl -Ffile=@$(name).md 'http://sdp-services.sdp.kat.ac.za:25478/upload?token=f9403fc5f537b4ab332d'
-	curl -Ffile=@$(name).pdf 'http://sdp-services.sdp.kat.ac.za:25478/upload?token=f9403fc5f537b4ab332d'
+	mkdir -p reports/$(name)
+	/usr/bin/env python3.8 device-md.py --device-info http://sdp-services.sdp.kat.ac.za/servers -o ./docs/docs $(name)
+	cp docs/docs/index.md reports/$(name)/$(name).md
+	sudo docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/ubuntu-latex --toc --to pdf --variable --fontfamily="Courier" --variable fontsize=12pt --variable title='SDP Server $(name)' --metadata date="`date +%D`" -o reports/$(name)/$(name).pdf --defaults=pandoc.yaml reports/$(name)/$(name).md
 
 build:
 	docker build -t sysinfo .
 
 open:
-	xdg-open ./docs/site/pdf/combined.pdf
+	xdg-open reports/$(name)/$(name).pdf

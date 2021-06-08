@@ -397,7 +397,7 @@ def parse_args():
 
     See configargparse for more detail.
     """
-    p = configargparse.ArgParser(default_config_files=["~/.config/sarao/netbox"])
+    p = configargparse.ArgParser(default_config_files=["~/.config/sarao/netbox/file.config"])
     p.add("-c", "--config", is_config_file=True, help="config file")
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")

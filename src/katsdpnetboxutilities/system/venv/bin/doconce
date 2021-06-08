@@ -1,0 +1,144 @@
+#!/home/kgomotso/gitworld/katsdpnetboxutilities/src/katsdpnetboxutilities/system/venv/bin/python3
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+import os, sys
+from subprocess import getstatusoutput
+from doconce.sphinx import sphinx_dir
+from doconce.jupyterbook import jupyterbook
+from doconce.slides import slides_html, slides_beamer, slides_markdown
+from doconce.globals import doconce_commands, supported_format_names
+from doconce.misc import (
+    misc_option,
+    insertdocstr,
+    spellcheck,
+    capitalize,
+    gwiki_figsubst,
+    latin2html,
+    remove_inline_comments,
+    apply_inline_edits,
+    sphinxfix_localURLs,
+    old2new_format,
+    latex_header,
+    latex_footer,
+    latex_problems,
+    ref_external,
+    find_nonascii_chars,
+    replace_from_file,
+    replace,
+    subst,
+    find,
+    include_map,
+    expand_mako,
+    wildcard_notation,
+    teamod,
+    list_fig_src_files,
+    list_labels,
+    split_rst,
+    split_html,
+    html_colorbullets,
+    md2html,
+    md2latex,
+    change_encoding,
+    guess_encoding,
+    clean,
+    lightclean,
+    remove_exercise_answers,
+    remove,
+    grab,
+    ptex2tex,
+    include_map,
+    expand_commands,
+    combine_images,
+    latex_exercise_toc,
+    pygmentize,
+    makefile,
+    latex2doconce,
+    latex_dislikes,
+    html2doconce,
+    ipynb2doconce,
+    fix_bibtex4publish,
+    diff,
+    gitdiff,
+    csv2table,
+    extract_exercises,
+    linkchecker,
+    grep,
+    help_format,
+    help_doconce
+    )
+
+def remove_options_from_command_line():
+    """Remove options (--name) from sys.argv."""
+    opts_index = [i for i in range(len(sys.argv))
+                  if sys.argv[i].startswith('--')]
+    for i in opts_index:
+        del sys.argv[i]
+
+def format():
+    """
+    Run the doconce module on a file (with extension .do.txt) in Doconce format
+    and produce another format (latex, html, plain text, reStructuredText, ...)::
+
+       doconce format html mydoc.do.txt
+    """
+    try:
+        import doconce.doconce
+    except ImportError:
+        # use local doconce module in the doconce package source:
+        try:
+            thisdir = os.path.dirname(sys.argv[0])
+            doconce_lib = os.path.join(thisdir, os.pardir, 'lib', 'doconce')
+            sys.path.insert(0, doconce_lib)
+            import doconce.doconce
+            print('Successfull import of doconce locally')
+        except ImportError as e:
+            print(e)
+            print('Could not import doconce from directory\n', os.getcwd())
+            sys.exit(1)
+
+    bg_session = doconce.doconce.format_driver()
+    return bg_session
+
+def main():
+    from doconce import __version__ as version
+    import doconce
+    doconce_dir = os.path.dirname(doconce.__file__)
+    if len(sys.argv) > 2 and sys.argv[1] == 'format' and misc_option('help'):
+        # doconce format --help
+        help_format()
+        sys.exit(0)
+    elif len(sys.argv) == 1:
+        # doconce
+        help_doconce()
+        sys.exit(0)
+    elif misc_option('help') and sys.argv[1] not in ['spellcheck', 'jupyterbook']:
+        # doconce <command> [<argument>] --help
+        help_doconce()
+        sys.exit(0)
+    elif misc_option('version'):
+        # doconce <command> [<argument>] --version
+        print('DocOnce version', version, '(from %s)' % doconce_dir)
+        sys.exit(0)
+
+    command = sys.argv[1]
+    del sys.argv[1]
+    # Process wrong commands
+    if command not in doconce_commands:
+        if command in supported_format_names:
+            print('command %sis not a legal command for doconce, did you meandoconce format %s %s?' %
+                  (command, command, ' '.join(sys.argv[1:])))
+        else:
+            print('command "%s" is not legal, must be among\n%s' % (command, ', '.join(doconce_commands)))
+        sys.exit(0)
+    # Execute the command
+    retval = eval(command + '()')
+    return retval
+
+bg_session = main()
+if bg_session is not None:
+    print('...running bokeh bg_session.loop_until_closed() in the background')
+    bg_session.loop_until_closed()
