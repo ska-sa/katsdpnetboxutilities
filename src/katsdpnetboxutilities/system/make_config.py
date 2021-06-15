@@ -1,17 +1,18 @@
+#!/usr/bin/env python3
+
 import sys
-import json
 import yaml
 
-name =  sys.argv[1]
+name = sys.argv[1]
 
-txt_for_header_file = "\\usepackage{fancyhdr}\n\\pagestyle{fancy} \n\\fancyhf{}"
+header_file = ["usepackage{fancyhdr}", "pagestyle{fancy}", "fancyhf{}"]
 
 
-serve_name = "\\rhead{\\textbf{"+name+"}}"
+header_file.append("rhead{\\textbf{%s}}" % name)
 
-with open("header.tex","w+") as f:
-    for txt in [txt_for_header_file,serve_name]:
-        f.write(txt)
+with open("header.tex", "w+") as f:
+    for txt in header_file:
+        f.write("\\" + txt + "\n")
 
     f.close()
 
@@ -31,7 +32,7 @@ config_dict = {
       "SARAO SDP"
     ],
     "title": [
-      f"SDP Systems {name}"
+      f"SDP System: {name}"
     ]
   },
   "include-before-body": [],

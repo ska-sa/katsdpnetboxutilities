@@ -31,7 +31,7 @@ metadata:
   author:
   - SARAO SDP
   title:
-  - SDP Systems cal1
+  - 'SDP System: cal1'
 number-sections: true
 pdf-engine: pdflatex
 pdf-engine-opts:
