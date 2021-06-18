@@ -4,7 +4,6 @@ boltons==21.0.0
 certifi==2021.5.30
 chardet==4.0.0
 ConfigArgParse==1.2.3
-DocOnce==1.5.10
 future==0.18.2
 graphviz==0.14.1
 idna==2.10
@@ -12,7 +11,8 @@ ipython-genutils==0.2.0
 jsonschema==3.2.0
 jupyter-client==6.1.12
 jupyter-core==4.7.1
-katsdpnetboxutilities @ git+https://github.com/ska-sa/katsdpnetboxutilities.git@f1da95d256fa48f5c65c3e0c3d4cf5cd29f0e27d
+git+https://github.com/ska-sa/katsdpnetboxutilities.git
+#katsdpnetboxutilities @ git+https://github.com/ska-sa/katsdpnetboxutilities.git@f1da95d256fa48f5c65c3e0c3d4cf5cd29f0e27d
 katversion==1.1
 lxml==4.6.3
 Mako==1.1.4

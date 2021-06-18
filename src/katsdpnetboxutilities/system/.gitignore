@@ -2,3 +2,5 @@ docs
 *.pdf
 venv
 *.swp
+reports
+data

@@ -156,17 +156,13 @@ class Page:
         """List-List no header table"""
         # Not a table just text now.
         self._lines.append(None)
-        #self._lines.append("|    | one | two |")
         self._lines.append("**Specifications**\n")
-        #self._lines.append("|----| ----- | ----- |")
         for row in rows:
-            #self._lines.append("\t + {}: **{}**\n".format(row[0], row[1]))
             self._lines.append(f"\t - {row[0]} : **{row[1]}**\n".strip())
         self._lines.append(None)
 
     def write(self, filename):
         if filename:
-            #self._lines.append("^[this is a footer]")
             with open(filename, "w+") as fh:
                 for line in self._lines:
                     if line:
@@ -396,7 +392,7 @@ def parse_args():
 
     See configargparse for more detail.
     """
-    p = configargparse.ArgParser(default_config_files=["~/.config/sarao/netbox"])
+    p = configargparse.ArgParser(default_config_files=["config/sarao/netbox"])
     p.add("-c", "--config", is_config_file=True, help="config file")
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")

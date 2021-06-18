@@ -2,14 +2,24 @@ FROM pandoc/ubuntu-latex
 
 MAINTAINER Martin Slabber <martin@ska.ac.za>
 
-RUN mkdir /docs
+RUN mkdir /src
 
-WORKDIR /docs
+WORKDIR /src
 
-COPY requirements.txt /docs
+COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt 
+COPY generate-report.sh .
 
-COPY . /docs
+RUN apt-get update -y; apt-get install python3.8 -y
 
-CMD device-md.py
+RUN apt-get install pip -y
+
+RUN apt-get install git -y
+
+RUN python3.8 -m pip install -r ./requirements.txt
+
+RUN chmod -R 777 ./generate-report.sh
+
+COPY . /src
+
+ENTRYPOINT ["bash","/src/generate-report.sh"]

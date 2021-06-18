@@ -30,8 +30,10 @@ markdown-headings: setext
 metadata:
   author:
   - SARAO SDP
+  fontfamily:
+  - Courier
   title:
-  - 'SDP System: cal1'
+  - 'SDP System: cal2'
 number-sections: true
 pdf-engine: pdflatex
 pdf-engine-opts:
