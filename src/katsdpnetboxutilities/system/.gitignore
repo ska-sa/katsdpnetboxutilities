@@ -9,3 +9,4 @@ header.tex
 pandoc.yaml
 ./docs
 *.pyc
+make_config/__pycache__/*.pyc
