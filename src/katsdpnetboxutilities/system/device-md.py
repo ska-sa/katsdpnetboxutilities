@@ -8,6 +8,7 @@ import requests
 from boltons.strutils import bytes2human
 from pathlib import Path
 from pprint import pprint
+from make_config import makeconfig
 
 from katsdpnetboxutilities.connect import query_netbox
 
@@ -458,6 +459,8 @@ def main():
     filename = "{}/index.md".format(config["output_path"])
     device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
+    makeconfig.make_header(config["device_name"])
+    makeconfig.make_pandoc_yaml(config["device_name"])
     print(page)
     page.write(filename)
 

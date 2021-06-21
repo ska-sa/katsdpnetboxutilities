@@ -1,6 +1,6 @@
 
 open:
-	xdg-open reports/$(name)/$(name).pdf
+	xdg-open /reports/$(name)/$(name).pdf
 
 build:
 	docker build -t sysinfo .

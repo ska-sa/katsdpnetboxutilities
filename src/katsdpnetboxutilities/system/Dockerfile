@@ -1,8 +1,9 @@
-FROM pandoc/ubuntu-latex
+FROM pandoc/ubuntu-latex:latest
 
 MAINTAINER Martin Slabber <martin@ska.ac.za>
 
-RUN apt-get update -y; apt-get install -y python3.8 pip git
+RUN apt-get update -y; apt-get install -y python3.8 pip git texlive-fonts-recommended
+
 
 RUN mkdir /src
 WORKDIR /src

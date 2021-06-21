@@ -3,4 +3,9 @@ docs
 venv
 *.swp
 reports
-data
+./data
+./venv
+header.tex
+pandoc.yaml
+./docs
+*.pyc
