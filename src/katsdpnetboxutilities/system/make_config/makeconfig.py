@@ -31,9 +31,6 @@ def make_pandoc_yaml(NAME):
         ],
         "fontfamily":["courier"]
       },
-      "hyperrefoptions": [
-       "papersize": "a4"
-       ],
       "include-before-body": [],
       "include-after-body": [],
       "include-in-header":

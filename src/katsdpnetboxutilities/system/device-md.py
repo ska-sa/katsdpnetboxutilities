@@ -383,7 +383,7 @@ class DeviceDocument:
         pass
 
     def write(self, filename: str = None):
-        self.page.heading(self._netbox.get("name", "not found"), 1)
+        self.page.heading(self._netbox.get("name", "Server"), 1)
         self._add_general()
         self._add_location()
         self._add_disk()
