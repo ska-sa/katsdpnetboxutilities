@@ -157,7 +157,11 @@ class Page:
         """List-List no header table"""
         # Not a table just text now.
         self._lines.append(None)
-        self._lines.append("**Specifications**\n")
+        if "Site" in rows[0][0] or  "Status" in rows[0][0]:
+            pass
+        else:
+            self._lines.append("**Specifications**\n")
+
         for row in rows:
             self._lines.append(f"\t - {row[0]} : **{row[1]}**\n".strip())
         self._lines.append(None)
@@ -202,6 +206,7 @@ class DeviceDocument:
         return label, value
 
     def _add_general(self):
+        self.page.heading("Netbox Information", 2)
         rows = []
         rows.append(self._get_value_for_table(self._netbox, "status"))
         rows.append(self._get_value_for_table(self._netbox, "id"))
@@ -393,7 +398,7 @@ def parse_args():
 
     See configargparse for more detail.
     """
-    p = configargparse.ArgParser(default_config_files=["config/sarao/netbox"])
+    p = configargparse.ArgParser(default_config_files=["/.config/sarao/netbox"])
     p.add("-c", "--config", is_config_file=True, help="config file")
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")

@@ -4,7 +4,7 @@ import sys
 import yaml
 
 def make_header(NAME):
-    header_file = ["usepackage{fancyhdr}", "pagestyle{fancy}", "fancyhf{}"]
+    header_file = ["usepackage{fancyhdr}","pagestyle{fancy}", "fancyhf{}"]
     header_file.append("rhead{\\textbf{%s}}" % NAME)
     with open("/reports/header.tex", "w+") as f:
         for txt in header_file:
@@ -16,10 +16,10 @@ def make_pandoc_yaml(NAME):
       "standalone": True,
       "self-contained": True,
       "variables": {
-        "documentclass": "book",
+        "documentclass": "report",
         "classoption": [
-          "twosides",
-          "draft"
+          "twosides"
+         ,"draft"
         ]
       },
       "metadata": {
@@ -31,11 +31,13 @@ def make_pandoc_yaml(NAME):
         ],
         "fontfamily":["courier"]
       },
+      "hyperrefoptions": [
+       "papersize": "a4"
+       ],
       "include-before-body": [],
       "include-after-body": [],
       "include-in-header":
-        "/reports/header.tex"
-      ,
+      ["/reports/header.tex"],
       "resource-path": [
         '\".\"'
       ],
@@ -57,7 +59,7 @@ def make_pandoc_yaml(NAME):
       "table-of-contents": True,
       "toc-depth": 4,
       "number-sections": True,
-      "shift-heading-level-by": 1,
+      "shift-heading-level-by": 0,
       "section-divs": True,
       "identifier-prefix": "foo",
       "title-prefix": "",

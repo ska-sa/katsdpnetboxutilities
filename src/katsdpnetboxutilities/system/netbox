@@ -1,4 +1,0 @@
-# Copy this file to ~/.config/sarao/netbox
-# Get a token for netbox and replace the token in ~/.config/sarao/netbox
-token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
-url=https://netbox.kat.ac.za
