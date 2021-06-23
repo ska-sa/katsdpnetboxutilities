@@ -22,7 +22,6 @@ def make_pandoc_yaml(NAME):
         "draft"
 
          ]
-
       },
       "metadata": {
         "author": [
@@ -35,8 +34,8 @@ def make_pandoc_yaml(NAME):
       },
       "include-before-body": [],
       "include-after-body": [],
-      "include-in-header":
-      ["/reports/header.tex"],
+      #"include-in-header":
+      #["/reports/header.tex"],
       "resource-path": [
         '\".\"'
       ],

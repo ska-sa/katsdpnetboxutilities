@@ -4,6 +4,7 @@ import configargparse
 import json
 import logging
 import requests
+from datetime import datetime
 
 from boltons.strutils import bytes2human
 from pathlib import Path
@@ -145,6 +146,18 @@ class RemoteDeviceInfo:
 class Page:
     def __init__(self):
         self._lines = []
+        # Todo: Make _doc_header a dict. And convert to YAML before adding to doc.
+        self._doc_header = ['papersize: a4', 'lang: en-GB', 'linkcolor: blue']
+        self._doc_header.append("date: {}".format(datetime.strftime(datetime.now(), "%d %B %Y")))
+        self._doc_header.append("header-includes: |")
+        self._doc_header.append("  \\usepackage{fancyhdr}")
+        self._doc_header.append("  \\pagestyle{fancy}")
+        # self._doc_header.append("  \\fancyhf")
+        self._doc_header.append("title: servers")
+        self._doc_header.append("hyperrefoptions:")
+        self._doc_header.append("- linktoc=all")
+        self._doc_header.append("- pdfwindowui")
+        self._doc_header.append("- pdfpagemode=FullScreen")
 
     def heading(self, heading, level):
         self._lines.append("#" * level + " " + heading)
@@ -169,6 +182,13 @@ class Page:
     def write(self, filename):
         if filename:
             with open(filename, "w+") as fh:
+                if self._doc_header:
+                    fh.write("---\n")
+                    for line in self._doc_header:
+                        if line:
+                            fh.write(line)
+                        fh.write("\n")
+                    fh.write("...\n")
                 for line in self._lines:
                     if line:
                         fh.write(line)
@@ -464,7 +484,7 @@ def main():
     filename = "{}/{}.md".format(config["output_path"],config["device_name"])
     device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
-    makeconfig.make_header(config["device_name"])
+    # makeconfig.make_header(config["device_name"])
     makeconfig.make_pandoc_yaml(config["device_name"])
     print(page)
     page.write(filename)
