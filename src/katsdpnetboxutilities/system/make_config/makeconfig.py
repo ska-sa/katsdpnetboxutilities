@@ -17,10 +17,12 @@ def make_pandoc_yaml(NAME):
       "self-contained": True,
       "variables": {
         "documentclass": "report",
-        "classoption": [
-          "twosides"
-         ,"draft"
-        ]
+        "classoption":
+         [ "oneside",
+        "draft"
+
+         ]
+
       },
       "metadata": {
         "author": [
@@ -51,7 +53,7 @@ def make_pandoc_yaml(NAME):
       ],
       "wrap": "auto",
       "columns": 78,
-      "dpi": 72,
+      "dpi": 300,
       "extract-media": "mediadir",
       "table-of-contents": True,
       "toc-depth": 4,

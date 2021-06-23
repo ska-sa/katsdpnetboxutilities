@@ -461,7 +461,7 @@ def main():
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    filename = "{}/index.md".format(config["output_path"])
+    filename = "{}/{}.md".format(config["output_path"],config["device_name"])
     device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
     makeconfig.make_header(config["device_name"])
