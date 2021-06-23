@@ -16,12 +16,10 @@ def make_pandoc_yaml(NAME):
       "standalone": True,
       "self-contained": True,
       "variables": {
-        "documentclass": "report",
+        "documentclass": "book",
         "classoption":
-         [ "oneside",
-        "draft"
-
-         ]
+        [ "oneside",
+        "draft"]
 
       },
       "metadata": {
@@ -35,8 +33,7 @@ def make_pandoc_yaml(NAME):
       },
       "include-before-body": [],
       "include-after-body": [],
-      "include-in-header":
-      ["/reports/header.tex"],
+      "include-in-header":[],
       "resource-path": [
         '\".\"'
       ],
