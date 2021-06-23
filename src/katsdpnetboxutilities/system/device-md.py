@@ -147,7 +147,7 @@ class Page:
     def __init__(self):
         self._lines = []
         # Todo: Make _doc_header a dict. And convert to YAML before adding to doc.
-        self._doc_header = ["papersize: a4", "lang: en-GB", "linkcolor: blue"]
+        self._doc_header = ["papersize: a4", "lang: en-GB", "linkcolor: blue", 'urlcolor: blue', 'toccolor: blue', 'colorlinks: true']
         self._doc_header.append(
             "date: {}".format(datetime.strftime(datetime.now(), "%d %B %Y"))
         )
@@ -155,7 +155,8 @@ class Page:
         self._doc_header.append("  \\usepackage{fancyhdr}")
         self._doc_header.append("  \\pagestyle{fancy}")
         # self._doc_header.append("  \\fancyhf")
-        self._doc_header.append("title: servers")
+        self._doc_header.append("title: 'servers'") # TODO: set to the real title. First make all of this a dict.
+        self._doc_header.append("keywords: ['SDP', 'server']") # TODO: set servername. First make all of this a dict.
         self._doc_header.append("hyperrefoptions:")
         self._doc_header.append("- linktoc=all")
         self._doc_header.append("- pdfwindowui")
