@@ -154,6 +154,8 @@ class Page:
         self._doc_header.append("header-includes: |")
         self._doc_header.append("  \\usepackage{fancyhdr}")
         self._doc_header.append("  \\pagestyle{fancy}")
+        self._doc_header.append("  \\fancyhead[CO,CE]{SARAO SDP}")
+        self._doc_header.append("  \\fancyhead[RO,RE]{Cal1}")
         # self._doc_header.append("  \\fancyhf")
         self._doc_header.append("title: 'servers'") # TODO: set to the real title. First make all of this a dict.
         self._doc_header.append("keywords: ['SDP', 'server']") # TODO: set servername. First make all of this a dict.
