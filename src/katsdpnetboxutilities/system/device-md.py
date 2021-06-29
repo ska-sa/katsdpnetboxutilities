@@ -144,8 +144,9 @@ class RemoteDeviceInfo:
 
 
 class Page:
-    def __init__(self):
+    def __init__(self,filename="server name"):
         self._lines = []
+        self.filename =  "{"+filename+"}"
         # Todo: Make _doc_header a dict. And convert to YAML before adding to doc.
         self._doc_header = ["papersize: a4", "lang: en-GB", "linkcolor: blue", 'urlcolor: blue', 'toccolor: blue', 'colorlinks: true']
         self._doc_header.append(
@@ -155,7 +156,7 @@ class Page:
         self._doc_header.append("  \\usepackage{fancyhdr}")
         self._doc_header.append("  \\pagestyle{fancy}")
         self._doc_header.append("  \\fancyhead[CO,CE]{SARAO SDP}")
-        self._doc_header.append("  \\fancyhead[RO,RE]{Cal1}")
+        self._doc_header.append(f"  \\fancyhead[RO,RE]{self.filename}")
         # self._doc_header.append("  \\fancyhf")
         self._doc_header.append("title: 'servers'") # TODO: set to the real title. First make all of this a dict.
         self._doc_header.append("keywords: ['SDP', 'server']") # TODO: set servername. First make all of this a dict.
@@ -211,7 +212,7 @@ class DeviceDocument:
     def __init__(self, netbox, device_info):
         self._netbox = netbox
         self._device_info = device_info
-        self.page = Page()
+        self.page = Page(self._netbox.get("name", "Server"))
 
     def _get_value_for_table(self, src, key, label=None):
         if label is None:
