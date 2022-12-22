@@ -3,6 +3,7 @@ docs
 venv
 *.swp
 reports
+reportCHPC
 ./data
 ./venv
 header.tex
@@ -12,3 +13,8 @@ pandoc.yaml
 make_config/__pycache__/*.pyc
 .ipynb_checkpoints
 *.json
+device-md.py.backup2
+generate-report.sh.backup
+katsdpinfrastructure
+servers
+device-md.py.keep

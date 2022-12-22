@@ -70,11 +70,11 @@ def make_pandoc_yaml(NAME):
         "markdown-headings": "setext",
         "track-changes": "accept",
         "html-q-tags": False,
-        "ipynb-output": "best",
+        "ipynb-output": "all",
         "request-headers": [["User-Agent", "Mozilla/5.0"]],
         "fail-if-warnings": False,
         "dump-args": False,
         "ignore-args": False,
         "trace": False,
     }
-    yaml.dump(config_dict, open("/reports/pandoc.yaml", "w"), default_flow_style=False)
+    yaml.dump(config_dict, open("reports/pandoc.yaml", "w"), default_flow_style=False)

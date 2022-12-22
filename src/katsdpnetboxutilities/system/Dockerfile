@@ -1,4 +1,4 @@
-FROM pandoc/ubuntu-latex:latest
+FROM pandoc/ubuntu-latex:2.12
 
 MAINTAINER SDP <sdp-direct@ska.ac.za>
 
