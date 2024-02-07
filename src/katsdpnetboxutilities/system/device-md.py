@@ -4,33 +4,39 @@ import configargparse
 import json
 import logging
 import requests
-
+from datetime import datetime
 from boltons.strutils import bytes2human
 from pathlib import Path
 from pprint import pprint
+from make_config import makeconfig
 
 from katsdpnetboxutilities.connect import query_netbox
 
+
 def format_bytes(size):
     # 2**10 = 1024
-    size = int(size)
-    power = 2**10
-    n = 0
-    power_labels = {0: '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
-    while size > power:
-        size /= power
-        n += 1
-    if power_labels[n] == "kilo":
-        suffix = "KB"
-    elif power_labels[n] == "mega":
-        suffix = "MB"
-    elif power_labels[n] == "giga":
-        suffix = "GB"
-    elif power_labels[n] == "tera":
-        suffix = "TB"
-    else:
-        suffix = ""
-    return "{}{}".format(size, suffix)
+    try:
+        size = int(size)
+        power = 2**10
+        n = 0
+        power_labels = {0: "", 1: "kilo", 2: "mega", 3: "giga", 4: "tera"}
+        while size > power:
+            size /= power
+            n += 1
+        if power_labels[n] == "kilo":
+            suffix = "KB"
+        elif power_labels[n] == "mega":
+            suffix = "MB"
+        elif power_labels[n] == "giga":
+            suffix = "GB"
+        elif power_labels[n] == "tera":
+            suffix = "TB"
+        else:
+            suffix = ""
+        return "{}{}".format(size, suffix)
+    except:
+        suffix = size[-1]
+        return "{}{}".format(size.replace(size[-1], ""), suffix)
 
 
 class RemoteDeviceInfo:
@@ -108,17 +114,30 @@ class RemoteDeviceInfo:
             data = {}
         return data
 
+    def load_json_file(self, filename, filepath="/servers/"):
+        try:
+            file_ = open(filepath + self.device_name + "/" + filename)
+            file_data = json.load(file_)
+            return file_data
+        except FileNotFoundError:
+            logging.warning(filepath + self.device_name + "/" + filename)
+            logging.warning(
+                "The {} file is not found in the /home/kat/servers/{} directory, please run the ansible role: hardware-info to fetch the data from remote host".format(
+                    filename, self.device_name
+                )
+            )
+
     def get_lshw(self) -> dict:
         lshw = self._cache.get("lshw")
         if lshw is None:
-            lshw = self.get_file_from_remote("lshw.json")
+            lshw = self.load_json_file("lshw.json")
             self._cache["lshw"] = lshw
         return lshw or {}
 
     def get_lsblk(self) -> dict:
         lsblk = self._cache.get("lsblk")
         if lsblk is None:
-            lsblk = self.get_file_from_remote("lsblk.json")
+            lsblk = self.load_json_file("lsblk.json")
             self._cache["lsblk"] = lsblk
         return lsblk or {}
 
@@ -139,14 +158,42 @@ class RemoteDeviceInfo:
                 data[blkdev["name"]] = blkdev
         return data
 
+
 class Page:
-    def __init__(self):
+    def __init__(self, filename="server name"):
         self._lines = []
+        self.filename = "{" + filename + "}"
+        # Todo: Make _doc_header a dict. And convert to YAML before adding to doc.
+        self._doc_header = [
+            "papersize: a4",
+            "lang: en-GB",
+            "linkcolor: blue",
+            "urlcolor: blue",
+            "toccolor: blue",
+            "colorlinks: true",
+        ]
+        self._doc_header.append(
+            "date: {}".format(datetime.strftime(datetime.now(), "%d %B %Y"))
+        )
+        self._doc_header.append("header-includes: |")
+        self._doc_header.append("  \\usepackage{fancyhdr}")
+        self._doc_header.append("  \\pagestyle{fancy}")
+        self._doc_header.append("  \\fancyhead[CO,CE]{SARAO SDP}")
+        self._doc_header.append(f"  \\fancyhead[RO,RE]{self.filename}")
+        # self._doc_header.append("  \\fancyhf")
+        self._doc_header.append(
+            "title: 'servers'"
+        )  # TODO: set to the real title. First make all of this a dict.
+        self._doc_header.append(
+            "keywords: ['SDP', 'server']"
+        )  # TODO: set servername. First make all of this a dict.
+        self._doc_header.append("hyperrefoptions:")
+        self._doc_header.append("- linktoc=all")
+        self._doc_header.append("- pdfwindowui")
+        self._doc_header.append("- pdfpagemode=FullScreen")
 
     def heading(self, heading, level):
-        c = {1: "#", 2: "*", 3: "="}.get(level, "=")
-        self._lines.append(heading)
-        self._lines.append(c * len(heading))
+        self._lines.append("#" * level + " " + heading)
         self._lines.append(None)
 
     def text(self, text):
@@ -156,24 +203,31 @@ class Page:
         """List-List no header table"""
         # Not a table just text now.
         self._lines.append(None)
-        self._lines.append(".. list-table::")
-        self._lines.append("   :widths: 10 25")
-        self._lines.append("   :header-rows: 0")
-        self._lines.append(None)
+        if "Site" in rows[0][0] or "Status" in rows[0][0]:
+            pass
+        else:
+            self._lines.append("**Specifications**\n")
+
         for row in rows:
-            self._lines.append("   * - {}".format(row[0]))
-            self._lines.append("     - {}".format(row[1] if row[1] else ''))
+            self._lines.append(f"\t - {row[0]} : **{row[1]}**\n".strip())
         self._lines.append(None)
 
     def write(self, filename):
         if filename:
             with open(filename, "w+") as fh:
+                if self._doc_header:
+                    fh.write("---\n")
+                    for line in self._doc_header:
+                        if line:
+                            fh.write(line)
+                        fh.write("\n")
+                    fh.write("...\n")
                 for line in self._lines:
                     if line:
                         fh.write(line)
                     fh.write("\n")
         else:
-            output = ''
+            output = ""
             for line in self._lines:
                 if line:
                     output += line
@@ -185,7 +239,7 @@ class DeviceDocument:
     def __init__(self, netbox, device_info):
         self._netbox = netbox
         self._device_info = device_info
-        self.page = Page()
+        self.page = Page(self._netbox.get("name", "Server"))
 
     def _get_value_for_table(self, src, key, label=None):
         if label is None:
@@ -204,12 +258,19 @@ class DeviceDocument:
         return label, value
 
     def _add_general(self):
+        self.page.heading("Netbox Information", 2)
         rows = []
         rows.append(self._get_value_for_table(self._netbox, "status"))
         rows.append(self._get_value_for_table(self._netbox, "id"))
-        rows.append(("Netbox URL", "`{} <{}>`_".format(
-            self._get_value_for_table(self._netbox, "url")[1],
-            self._get_value_for_table(self._netbox, "url")[1])))
+        rows.append(
+            (
+                "Netbox URL",
+                "[{}]({})".format(
+                    self._get_value_for_table(self._netbox, "url")[1],
+                    self._get_value_for_table(self._netbox, "url")[1],
+                ),
+            )
+        )
         rows.append(self._get_value_for_table(self._netbox, "serial"))
         rows.append(self._get_value_for_table(self._netbox, "device_role"))
         rows.append(self._get_value_for_table(self._netbox, "device_type"))
@@ -227,7 +288,7 @@ class DeviceDocument:
 
     def _add_cpu_table(self, cpu_info):
         rows = []
-        if cpu_info.get('disabled', False):
+        if cpu_info.get("disabled", False):
             self.page.text("CPU is disabled")
         else:
             rows.append(self._get_value_for_table(cpu_info, "vendor"))
@@ -235,20 +296,82 @@ class DeviceDocument:
                 rows.append(self._get_value_for_table(cpu_info, "product"))
             elif self._get_value_for_table(cpu_info, "version") is not None:
                 rows.append(self._get_value_for_table(cpu_info, "version"))
-            if self._get_value_for_table(cpu_info, "clock") is not None:
-                rows.append((self._get_value_for_table(cpu_info, "clock")[0],
-                             bytes2human(int(self._get_value_for_table(cpu_info, "clock")[1]), ndigits=2)+"Hz"))
+            if self._get_value_for_table(cpu_info, "clock")[1] is not None:
+                rows.append(
+                    (
+                        self._get_value_for_table(cpu_info, "clock")[0],
+                        bytes2human(
+                            int(self._get_value_for_table(cpu_info, "clock")[1]),
+                            ndigits=2,
+                        )
+                        + "Hz",
+                    )
+                )
             elif self._get_value_for_table(cpu_info, "capacity") is not None:
-                rows.append((self._get_value_for_table(cpu_info, "capacity")[0],
-                             bytes2human(int(self._get_value_for_table(cpu_info, "capacity")[1]), ndigits=2)+"Hz"))
-            cores_str = ("enabled: {}/{}, threads {}".format(cpu_info['configuration']['enabledcores'],
-                                                             cpu_info['configuration']['cores'],
-                                                             cpu_info['configuration']['threads']
-                                                             )
-                         )
+                rows.append(
+                    (
+                        self._get_value_for_table(cpu_info, "capacity")[0],
+                        bytes2human(
+                            int(self._get_value_for_table(cpu_info, "capacity")[1]),
+                            ndigits=2,
+                        )
+                        + "Hz",
+                    )
+                )
+            cores_str = "enabled: {}/{}, threads {}".format(
+                cpu_info["configuration"]["enabledcores"],
+                cpu_info["configuration"]["cores"],
+                cpu_info["configuration"]["threads"],
+            )
             rows.append(("Cores", cores_str))
             capabilities = []
             for cap, val in cpu_info["capabilities"].items():
+                if val is True:
+                    capabilities.append(cap)
+                else:
+                    capabilities.append(val)
+            rows.append(("Capabilities", ", ".join(sorted(capabilities))))
+            self.page.ll_table(rows)
+
+    def _add_gpu_table(self, gpu_info):
+        rows = []
+        if gpu_info.get("disabled", False):
+            self.page.text("GPU is disabled")
+        else:
+            rows.append(self._get_value_for_table(gpu_info, "vendor"))
+            if self._get_value_for_table(gpu_info, "product") is not None:
+                rows.append(self._get_value_for_table(gpu_info, "product"))
+            elif self._get_value_for_table(gpu_info, "version") is not None:
+                rows.append(self._get_value_for_table(gpu_info, "version"))
+            if self._get_value_for_table(gpu_info, "clock")[1] is not None:
+                pass
+            elif self._get_value_for_table(gpu_info, "capacity") is not None:
+                rows.append(
+                    (
+                        self._get_value_for_table(gpu_info, "capacity")[0],
+                        bytes2human(
+                            int(self._get_value_for_table(gpu_info, "capacity")[1]),
+                            ndigits=2,
+                        )
+                        + "Hz",
+                    )
+                )
+            config_str_1 = "depth: {}, driver: {}, latency: {}".format(
+                gpu_info["configuration"].get("depth"),
+                gpu_info["configuration"].get("driver"),
+                gpu_info["configuration"].get("latency"),
+            )
+            config_str_2 = "mode: {}, visual: {}, xres: {}, yres: {}".format(
+                gpu_info["configuration"].get("mode"),
+                gpu_info["configuration"].get("visual"),
+                gpu_info["configuration"].get("xres"),
+                gpu_info["configuration"].get("yres"),
+            )
+
+            rows.append(("configuration (1/2)", config_str_1))
+            rows.append(("configuration (2/2)", config_str_2))
+            capabilities = []
+            for cap, val in gpu_info["capabilities"].items():
                 if val is True:
                     capabilities.append(cap)
                 else:
@@ -264,23 +387,76 @@ class DeviceDocument:
         for child in core.get("children", []):
             if child.get("id") in ["cpu", "cpu:0", "cpu:1"]:
                 cpus[child["slot"]] = child
-        print(cpus)
-        if "cpu" in cpus:
+        # print(cpus)
+
+        if "CPU1" in cpus.keys():
             # Single CPU system
-            self._add_cpu_table(cpus["cpu"])
+            self.page.heading("CPU1", 3)
+            self._add_cpu_table(cpus["CPU1"])
         else:
             for cpu in sorted(cpus.keys()):
-                self.page.heading(cpu, 3)
-                self._add_cpu_table(cpus[cpu])
+                try:
+                    self.page.heading(cpu, 3)
+                    self._add_cpu_table(cpus[cpu])
+                except:
+                    pass
+
+    def _add_display(self):
+        # .[0].children[0].children[1]
+        self.page.heading("GPU", 2)
+        gpus = {}
+        core = self._device_info.lshw_core()
+        print(core)
+        core0 = core["children"]
+        try:
+            for child1 in core0:
+                if "pci" in child1["id"]:
+                    for child2 in child1["children"]:
+                        if "pci" in child2["id"]:
+                            for child3 in child2.get("children", []):
+                                for child4 in child3.get("children", []):
+                                    for child5 in child4.get("children", []):
+                                        if "display" in child5["id"]:
+                                            gpus[child5["businfo"]] = child5
+                                            break
+        except KeyError:
+            for child1 in core0:
+                if "pci" in child1["id"]:
+                    if 'children' in child1.keys():
+                        for child2 in child1["children"]:
+                            if "pci" in child2["id"]:
+                                if 'children' in child2.keys():
+                                    for child3 in child2['children']:
+                                        if 'display' in child3['id']:
+                                            gpus[child3["businfo"]] = child3
+                                            break
+
+
+        for num, gpu in enumerate(sorted(gpus.keys())):
+            try:
+                num += 1
+                self.page.heading(f"GPU {num}", 3)
+                self._add_gpu_table(gpus[gpu])
+                break
+            except:
+                pass
 
     def _add_memory(self):
         # .[0].children[0].children[1]
         self.page.heading("Memory", 2)
         core = self._device_info.lshw_core()
         for child in core.get("children", []):
-            if child.get("id") in ["memory", "memory:0", "memory:1","memory:2", "memory:3", "memory:4", "memory:5",
-                                   "memory:6"]:
-            #if "memory" in child.get("id"):
+            if child.get("id") in [
+                "memory",
+                "memory:0",
+                "memory:1",
+                "memory:2",
+                "memory:3",
+                "memory:4",
+                "memory:5",
+                "memory:6",
+            ]:
+                # if "memory" in child.get("id"):
                 memory = child
                 break
         else:
@@ -288,7 +464,7 @@ class DeviceDocument:
 
         memmap = {}
         for dimm in memory.get("children", []):
-            if 'vendor' in dimm and dimm["vendor"] != "NO DIMM":
+            if "vendor" in dimm and dimm["vendor"] != "NO DIMM":
                 memmap[dimm["slot"]] = dimm
 
         # TODO: Total Memory
@@ -301,10 +477,25 @@ class DeviceDocument:
             rows.append(self._get_value_for_table(memmap[slot], "description"))
             rows.append(self._get_value_for_table(memmap[slot], "vendor"))
             rows.append(self._get_value_for_table(memmap[slot], "product"))
-            rows.append((self._get_value_for_table(memmap[slot], "size")[0],
-                         format_bytes(self._get_value_for_table(memmap[slot], "size")[1])))
-            rows.append((self._get_value_for_table(memmap[slot], "clock")[0],
-                         str(int(self._get_value_for_table(memmap[slot], "clock")[1] / 1000000)) + "MHz"))
+            rows.append(
+                (
+                    self._get_value_for_table(memmap[slot], "size")[0],
+                    format_bytes(self._get_value_for_table(memmap[slot], "size")[1]),
+                )
+            )
+            if self._get_value_for_table(memmap[slot], "clock")[1] is not None:
+                rows.append(
+                    (
+                        self._get_value_for_table(memmap[slot], "clock")[0],
+                        str(
+                            int(
+                                self._get_value_for_table(memmap[slot], "clock")[1]
+                                / 1000000
+                            )
+                        )
+                        + "MHz",
+                    )
+                )
             rows.append(self._get_value_for_table(memmap[slot], "serial"))
             self.page.ll_table(rows)
 
@@ -312,15 +503,21 @@ class DeviceDocument:
         self.page.heading("Disks", 2)
         disks = self._device_info.lsblk_devices()
         for dev in sorted(disks.keys()):
-            wwn = disks[dev].get('wwn')
+            wwn = disks[dev].get("wwn")
             if wwn is not None:
                 self.page.heading("WWN:" + disks[dev]["wwn"], 3)
                 rows = []
                 rows.append(self._get_value_for_table(disks[dev], "vendor"))
-                rows.append(self._get_value_for_table(disks[dev], "rota", "Spinning Disk"))
+                rows.append(
+                    self._get_value_for_table(disks[dev], "rota", "Spinning Disk")
+                )
                 rows.append(self._get_value_for_table(disks[dev], "model"))
-                rows.append((self._get_value_for_table(disks[dev], "size")[0],
-                             format_bytes(self._get_value_for_table(disks[dev], "size")[1])))
+                rows.append(
+                    (
+                        self._get_value_for_table(disks[dev], "size")[0],
+                        format_bytes(self._get_value_for_table(disks[dev], "size")[1]),
+                    )
+                )
                 rows.append(self._get_value_for_table(disks[dev], "serial"))
                 self.page.ll_table(rows)
             else:
@@ -330,12 +527,13 @@ class DeviceDocument:
         pass
 
     def write(self, filename: str = None):
-        self.page.heading(self._netbox.get("name", 'not found'), 1)
+        self.page.heading(self._netbox.get("name", "Server"), 1)
         self._add_general()
         self._add_location()
         self._add_disk()
         self._add_fs()
         self._add_cpu()
+        self._add_display()
         self._add_memory()
         return self.page.write(filename)
 
@@ -345,7 +543,7 @@ def parse_args():
 
     See configargparse for more detail.
     """
-    p = configargparse.ArgParser(default_config_files=["~/.config/sarao/netbox"])
+    p = configargparse.ArgParser(default_config_files=["/.config/sarao/netbox.txt"])
     p.add("-c", "--config", is_config_file=True, help="config file")
     p.add("--token", help="Netbox connection token")
     p.add("--url", help="Netbox server URL")
@@ -382,10 +580,10 @@ def parse_args():
 
 def host_report(hostname, settings):
     config = vars(settings)
-    config['url'] = config['netbox_url']
-    config['token'] = config['netbox_token']
-    config['device_info'] = config['device_info_url']
-    config['device_name'] = hostname
+    config["url"] = config["netbox_url"]
+    config["token"] = config["netbox_token"]
+    config["device_info"] = config["device_info_url"]
+    config["device_name"] = hostname
     path = "/api/dcim/devices"
     query = {"name": config["device_name"]}
     netbox = query_netbox(config, path, query)
@@ -393,7 +591,7 @@ def host_report(hostname, settings):
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
+    device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
     return page.write()
 
@@ -408,12 +606,11 @@ def main():
         netbox = netbox["results"][0]
     else:
         logging.error("Could not get device")
-    filename = "{}/source/{}/index.rst".format(
-        config['output_path'],
-        config['device_name']
-    )
-    device_info = RemoteDeviceInfo(config["device_info"], config['device_name'])
+    filename = "{}/{}.md".format(config["output_path"], config["device_name"])
+    device_info = RemoteDeviceInfo(config["device_info"], config["device_name"])
     page = DeviceDocument(netbox, device_info)
+    # makeconfig.make_header(config["device_name"])
+    makeconfig.make_pandoc_yaml(config["device_name"])
     print(page)
     page.write(filename)
 

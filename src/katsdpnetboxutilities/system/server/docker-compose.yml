@@ -1,0 +1,9 @@
+version: "3"
+services:
+  pythonServer:
+    build: .
+    image: documentserver
+    volumes:
+      - /home/kat/gitworld/katsdpnetboxutilities/src/katsdpnetboxutilities/system/reports:/src/reports
+    ports:
+      - 8080:8080
